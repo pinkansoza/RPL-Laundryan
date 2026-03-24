@@ -13,7 +13,7 @@
                     Solusi Cerdas untuk <br> <span class="text-[#559dd4]">Pakaian Berkualitas</span>
                 </h2>
                 <p class="mt-3 md:mt-4 text-gray-600 text-xs md:text-lg leading-relaxed">
-                    Bisa antar jemput radius 3 km dari UNNES. <br class="hidden md:block"> 
+                    Bisa antar jemput radius 3 km dari Laundry AK. <br> 
                     <span class="text-[#89b252] font-bold">Murah, Bersih, dan Wangi.</span>
                 </p>
             </div>

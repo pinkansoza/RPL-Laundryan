@@ -3,7 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>LaundryKu - @yield('title')</title>
+    <link rel="icon" type="image/png" href="{{ asset('favicon.png') }}">
+    <title>Laundry AK</title>
     
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
@@ -51,7 +52,6 @@
     </div>
 
     <script>
-        // Fungsi Global Toggle Modal
         window.toggleModal = function() {
             const modal = document.getElementById('order-modal');
             if (modal.classList.contains('hidden')) {
@@ -63,7 +63,6 @@
             }
         }
 
-        // Tutup dengan ESC
         document.addEventListener('keydown', (e) => {
             if (e.key === "Escape") {
                 const modal = document.getElementById('order-modal');

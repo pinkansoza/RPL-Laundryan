@@ -1,21 +1,21 @@
-<nav class="bg-white/90 backdrop-blur-md shadow-sm sticky top-0 z-50 p-4">
+<nav class="bg-white/90 backdrop-blur-md shadow-sm sticky top-0 z-50 p-3">
     <div class="container mx-auto flex justify-between items-center">
-        <a href="#" class="text-xl md:text-2xl font-bold text-blue-600 flex items-center gap-3">
-            <img src="{{ asset('img/Logo FMI - Hitam@4x.png') }}" alt="Logo" class="w-8 h-8 md:w-10 md:h-10 object-contain">
-            <img src="{{ asset('img/Screenshot 2026-03-21 003634.png') }}" alt="Text Logo" class="h-6 md:h-8 w-auto object-contain">
+        <a href="#" class="text-xl md:text-2xl font-bold text-cyan-600 flex items-center gap-3">
+            <img src="{{ asset('img/1.png') }}" alt="Logo" class="w-10 h-10 md:w-14 md:h-14 object-contain">
+            <img src="{{ asset('img/2.png') }}" alt="Text Logo" class="h-8 md:h-10 w-auto object-contain">
         </a>
         
-        <div class="hidden md:flex items-center space-x-8 text-gray-600 font-medium text-sm">
-            <a href="#beranda" class="relative hover:text-blue-600 transition after:absolute after:left-0 after:-bottom-1 after:w-full after:h-0.5 after:bg-blue-600 after:opacity-0 hover:after:opacity-100 after:transition-opacity">Beranda</a>
-            <a href="#tentang" class="relative hover:text-blue-600 transition after:absolute after:left-0 after:-bottom-1 after:w-full after:h-0.5 after:bg-blue-600 after:opacity-0 hover:after:opacity-100 after:transition-opacity">Tentang</a>
-            <a href="#layanan" class="relative hover:text-blue-600 transition after:absolute after:left-0 after:-bottom-1 after:w-full after:h-0.5 after:bg-blue-600 after:opacity-0 hover:after:opacity-100 after:transition-opacity">Layanan</a>
-            <a href="#alamat" class="relative hover:text-blue-600 transition after:absolute after:left-0 after:-bottom-1 after:w-full after:h-0.5 after:bg-blue-600 after:opacity-0 hover:after:opacity-100 after:transition-opacity">Alamat</a>
-            <button onclick="toggleModal()" class="bg-blue-600 text-white px-6 py-2 rounded-full font-bold hover:bg-blue-700 shadow-md transition transform hover:scale-105 active:scale-95">
-                Pesan Sekarang
+        <div class="hidden lg:flex items-center space-x-4 text-gray-600 font-medium text-sm">
+            <a href="#beranda" class="px-4 py-2 rounded-lg hover:bg-[#559dd4] hover:text-white transition-all duration-300">Beranda</a>
+            <a href="#tentang" class="px-4 py-2 rounded-lg hover:bg-[#559dd4] hover:text-white transition-all duration-300">Layanan</a>
+            <a href="#layanan" class="px-4 py-2 rounded-lg hover:bg-[#559dd4] hover:text-white transition-all duration-300">Harga</a>
+            <a href="#alamat" class="px-4 py-2 rounded-lg hover:bg-[#559dd4] hover:text-white transition-all duration-300">Kontak</a>
+            <button onclick="toggleModal()" class="bg-[#559dd4] text-white px-6 py-2 rounded-full font-bold hover:bg-cyan-600 shadow-md transition transform hover:scale-105 active:scale-95">
+                Laundry Sekarang
             </button>
         </div>
 
-        <div class="md:hidden flex items-center">
+        <div class="lg:hidden flex items-center">
             <button id="menu-btn" class="relative w-10 h-10 text-gray-600 focus:outline-none bg-gray-50 rounded-lg flex items-center justify-center">
                 <div class="block w-5 absolute left-1/2 top-1/2 transform -translate-x-1/2 -translate-y-1/2">
                     <span id="line-1" class="block absolute h-0.5 w-5 bg-current transform transition duration-500 ease-in-out -translate-y-1.5"></span>
@@ -26,11 +26,11 @@
         </div>
     </div>
 
-    <div id="mobile-menu" class="hidden md:hidden bg-white border-t mt-4 space-y-1 p-4 pb-6 shadow-xl rounded-b-2xl">
-        <a href="#beranda" class="mobile-link block p-4 text-gray-700 font-semibold hover:bg-blue-50 rounded-xl transition">Beranda</a>
-        <a href="#tentang" class="mobile-link block p-4 text-gray-700 font-semibold hover:bg-blue-50 rounded-xl transition">Tentang</a>
-        <a href="#layanan" class="mobile-link block p-4 text-gray-700 font-semibold hover:bg-blue-50 rounded-xl transition">Layanan & Harga</a>
-        <a href="#alamat" class="mobile-link block p-4 text-gray-700 font-semibold hover:bg-blue-50 rounded-xl transition">Alamat</a>
+    <div id="mobile-menu" class="hidden lg:hidden bg-white border-t mt-4 space-y-2 p-4 pb-6 shadow-xl rounded-b-2xl">
+        <a href="#beranda" class="mobile-link block p-4 text-gray-700 font-semibold hover:bg-[#559dd4] hover:text-white hover:translate-x-2 transform transition-all duration-300 rounded-xl">Beranda</a>
+        <a href="#tentang" class="mobile-link block p-4 text-gray-700 font-semibold hover:bg-[#559dd4] hover:text-white hover:translate-x-2 transform transition-all duration-300 rounded-xl">Layanan</a>
+        <a href="#layanan" class="mobile-link block p-4 text-gray-700 font-semibold hover:bg-[#559dd4] hover:text-white hover:translate-x-2 transform transition-all duration-300 rounded-xl">Harga</a>
+        <a href="#alamat" class="mobile-link block p-4 text-gray-700 font-semibold hover:bg-[#559dd4] hover:text-white hover:translate-x-2 transform transition-all duration-300 rounded-xl">Kontak</a>
     </div>
 </nav>
 
