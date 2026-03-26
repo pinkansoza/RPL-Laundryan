@@ -11,7 +11,6 @@ class CreateHarga extends CreateRecord
 
     protected function getRedirectUrl(): string
     {
-        // Setelah simpan, tetap di halaman tambah data biar bisa input item selanjutnya
         return $this->getResource()::getUrl('create');
         return $this->getResource()::getUrl('index');
     }

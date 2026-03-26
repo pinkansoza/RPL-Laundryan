@@ -4,7 +4,6 @@ namespace App\Filament\Resources\BerandaSettings\Pages;
 
 use App\Filament\Resources\BerandaSettings\BerandaSettingResource;
 use Filament\Resources\Pages\ListRecords;
-// Hapus import CreateAction jika tidak dipakai lagi
 
 class ListBerandaSettings extends ListRecords
 {
@@ -12,8 +11,6 @@ class ListBerandaSettings extends ListRecords
 
     protected function getHeaderActions(): array
     {
-        return [
-            // Kosongkan array ini agar tombol "New" di pojok kanan atas hilang
-        ];
+        return [];
     }
 }

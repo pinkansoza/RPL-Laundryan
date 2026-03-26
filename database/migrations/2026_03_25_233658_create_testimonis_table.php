@@ -15,9 +15,9 @@ return new class extends Migration
             $table->id();
             $table->string('nama_pelanggan');
             $table->text('pesan');
-            $table->integer('bintang')->default(5); // 1-5 bintang
-            $table->string('foto_pelanggan')->nullable(); // Opsional
-            $table->boolean('is_tampilkan')->default(true); // Biar bisa pilih mana yang mau dipublish
+            $table->integer('bintang')->default(5);
+            $table->string('foto_pelanggan')->nullable();
+            $table->boolean('is_tampilkan')->default(true);
             $table->timestamps();
         });
     }

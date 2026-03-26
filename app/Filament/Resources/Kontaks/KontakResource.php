@@ -13,13 +13,13 @@ use Filament\Resources\Resource;
 use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Table;
-use Illuminate\Database\Eloquent\Model; // Tambahkan import ini
+use Illuminate\Database\Eloquent\Model; 
 
 class KontakResource extends Resource
 {
     protected static ?string $model = Kontak::class;
 
-    protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedAtSymbol; // Saya ganti ikonnya biar lebih nyambung ke "Kontak"
+    protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedAtSymbol; 
 
     protected static ?string $recordTitleAttribute = 'alamat';
 
@@ -43,13 +43,11 @@ class KontakResource extends Resource
         return KontaksTable::configure($table);
     }
 
-    // 1. Menghilangkan tombol "New"
     public static function canCreate(): bool
     {
         return false;
     }
 
-    // 2. Menghilangkan tombol "Delete" di baris tabel maupun halaman edit
     public static function canDelete(Model $record): bool
     {
         return false;
@@ -66,7 +64,6 @@ class KontakResource extends Resource
     {
         return [
             'index' => ListKontaks::route('/'),
-            // 'create' dihapus karena tidak akan pernah bisa diakses
             'edit' => EditKontak::route('/{record}/edit'),
         ];
     }

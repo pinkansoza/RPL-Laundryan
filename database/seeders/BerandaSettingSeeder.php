@@ -15,7 +15,7 @@ class BerandaSettingSeeder extends Seeder
         \App\Models\BerandaSetting::create([
             'judul' => 'Solusi Cerdas untuk <br> <span>Pakaian Berkualitas</span>',
             'slogan' => 'Bisa antar jemput radius 3 km dari Laundry AK.',
-            'gambar' => null, // Biarkan kosong dulu
+            'gambar' => null,
         ]);
     }
 }

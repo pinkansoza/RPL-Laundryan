@@ -9,10 +9,8 @@ class Kontak extends Model
 {
     use HasFactory;
 
-    // Nama tabelnya (opsional jika sudah jamak 'kontaks', tapi aman buat jaga-jaga)
     protected $table = 'kontaks';
 
-    // Daftar kolom yang boleh diisi lewat form/admin
     protected $fillable = [
         'alamat',
         'whatsapp',

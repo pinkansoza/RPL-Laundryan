@@ -9,13 +9,8 @@
         <div class="flex flex-wrap justify-center gap-5 md:gap-8">
             
             @foreach ($hargas as $harga)
-            {{-- 
-                PERUBAHAN: 
-                - border-2 (2px) diubah jadi border (1px) agar lebih tipis dan elegan
-            --}}
             <div class="group relative bg-white rounded-2xl md:rounded-3xl p-6 md:p-8 border border-[#89b252] shadow-sm hover:shadow-xl hover:-translate-y-2 transition-all duration-500 w-full sm:w-[calc(50%-1.25rem)] lg:w-[calc(33.333%-2rem)] max-w-sm lg:max-w-none flex flex-col">
                 
-                {{-- Header Card --}}
                 <div class="text-center mb-6 border-b border-gray-50 pb-5">
                     <h3 class="text-lg md:text-2xl font-black text-[#89b252] uppercase tracking-widest mb-1">
                         {{ $harga->nama_paket }}
@@ -25,7 +20,6 @@
                     </div>
                 </div>
 
-                {{-- List Item Harga --}}
                 <div class="flex-grow">
                     @foreach ($harga->konten as $index => $kategori)
                         <div class="{{ !$loop->last ? 'mb-6' : '' }}">

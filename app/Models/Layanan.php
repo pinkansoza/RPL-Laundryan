@@ -9,7 +9,6 @@ class Layanan extends Model
 {
     use HasFactory;
 
-    // Tentukan kolom mana saja yang boleh diisi secara massal
     protected $fillable = [
         'nama',
         'deskripsi',
@@ -17,8 +16,6 @@ class Layanan extends Model
         'warna',
         'urutan',
     ];
-
-    // Opsional: Jika kamu ingin memastikan urutan default selalu 0
     protected $attributes = [
         'urutan' => 0,
     ];

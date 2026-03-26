@@ -11,7 +11,6 @@ use App\Models\BerandaSetting;
 use Filament\Resources\Resource;
 use Filament\Schemas\Schema;
 use Filament\Tables\Table;
-// WAJIB IMPORT KEDUANYA UNTUK MENGHINDARI FATAL ERROR TIPE DATA
 use UnitEnum;
 use BackedEnum;
 
@@ -19,12 +18,9 @@ class BerandaSettingResource extends Resource
 {
     protected static ?string $model = BerandaSetting::class;
 
-    // Perbaikan: Gunakan deklarasi tipe lengkap sesuai core Filament
     protected static string|BackedEnum|null $navigationIcon = 'heroicon-o-rectangle-stack';
 
     protected static ?string $recordTitleAttribute = 'judul';
-
-    // Perbaikan: Tambahkan UnitEnum agar match dengan parent class
     protected static UnitEnum|string|null $navigationGroup = 'Pengaturan Website';
     
     protected static ?string $navigationLabel = 'Beranda';
@@ -43,10 +39,6 @@ class BerandaSettingResource extends Resource
         return BerandaSettingsTable::configure($table);
     }
 
-    /**
-     * Trik Khusus Pengaturan: 
-     * Sembunyikan tombol "Create" jika sudah ada 1 data di database.
-     */
     public static function canCreate(): bool
     {
         return BerandaSetting::count() < 1;

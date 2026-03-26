@@ -12,8 +12,6 @@ class ListKontaks extends ListRecords
 
     protected function getHeaderActions(): array
     {
-        return [
-            // Kosongkan array ini, atau hapus Actions\CreateAction::make()
-        ];
+        return [];
     }
 }

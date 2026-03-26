@@ -4,11 +4,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     
-    {{-- SEO Meta Tags --}}
     <meta name="description" content="Laundry AK - Solusi jasa laundry bersih, wangi, dan terpercaya dengan layanan antar jemput.">
     <link rel="icon" type="image/png" href="{{ asset('favicon.png') }}">
     
-    {{-- Judul jadi dinamis --}}
     <title>@yield('title') | Laundry AK</title> 
     
     <script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>
@@ -39,12 +37,10 @@
         .animate-fade-in-up { animation: fadeInUp 0.4s ease-out forwards; }
         .modal-open { overflow: hidden; }
         
-        /* Custom scrollbar utama */
         ::-webkit-scrollbar { width: 8px; }
         ::-webkit-scrollbar-track { background: #dad4d4ff; }
         ::-webkit-scrollbar-thumb { background: #8a8a8aff; border-radius: 10px; }
 
-        /* Utilitas untuk menyembunyikan scrollbar pada elemen horizontal scroll */
         .scrollbar-hide::-webkit-scrollbar { display: none; }
         .scrollbar-hide { -ms-overflow-style: none; scrollbar-width: none; }
     </style>

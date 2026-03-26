@@ -14,8 +14,8 @@ return new class extends Migration
         Schema::create('beranda_settings', function (Blueprint $table) {
             $table->id();
             $table->string('judul');
-            $table->text('slogan');  // Kita pakai nama 'slogan'
-            $table->string('gambar')->nullable(); // Kita pakai nama 'gambar'
+            $table->text('slogan');
+            $table->string('gambar')->nullable();
             $table->timestamps();
         });
     }

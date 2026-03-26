@@ -33,11 +33,9 @@ class BerandaSettingsTable
                 //
             ])
             ->actions([
-                // Sekarang EditAction sudah dikenali karena import-nya benar
                 EditAction::make(),
             ])
             ->bulkActions([
-                // Kosongkan agar fitur hapus massal hilang
             ]);
     }
 }

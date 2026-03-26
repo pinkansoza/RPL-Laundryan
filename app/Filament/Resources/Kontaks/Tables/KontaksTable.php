@@ -14,13 +14,13 @@ class KontaksTable
             ->columns([
                 TextColumn::make('alamat')
                     ->label('Alamat')
-                    ->limit(30) // Biar nggak kepanjangan di tabel
+                    ->limit(30) 
                     ->searchable(),
 
                 TextColumn::make('whatsapp')
                     ->label('WhatsApp')
-                    ->icon('heroicon-m-phone') // Tambah ikon biar cakep
-                    ->copyable() // Admin bisa langsung copy nomornya
+                    ->icon('heroicon-m-phone') 
+                    ->copyable() 
                     ->searchable(),
 
                 TextColumn::make('instagram')
@@ -34,7 +34,6 @@ class KontaksTable
                     ->label('Jam Operasional'),
             ])
             ->filters([
-                // Kosongkan saja karena datanya cuma sedikit (biasanya cuma 1)
             ])
             ->actions([
                 EditAction::make(),

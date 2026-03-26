@@ -15,9 +15,9 @@ return new class extends Migration
             $table->id();
             $table->string('nama');
             $table->string('deskripsi');
-            $table->string('ikon'); // Kita simpan nama ikon (misal: heroicon-o-truck)
-            $table->string('warna')->default('blue'); // Untuk warna background ikon
-            $table->integer('urutan')->default(0); // Agar bisa diurutkan
+            $table->string('ikon');
+            $table->string('warna')->default('blue');
+            $table->integer('urutan')->default(0);
             $table->timestamps();
         });
     }

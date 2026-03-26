@@ -9,6 +9,6 @@ class Harga extends Model
     protected $fillable = ['nama_paket', 'estimasi', 'konten'];
 
     protected $casts = [
-        'konten' => 'array', // WAJIB: Biar Filament bisa simpan data berjenjang
+        'konten' => 'array', 
     ];
 }

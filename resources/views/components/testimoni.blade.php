@@ -4,15 +4,12 @@
         intervalL: null,
         
         init() {
-            // Beri waktu sejenak agar DOM render sempurna sebelum hitung lebar
             this.$nextTick(() => {
-                // Baris 2 (ke kiri) mulai dari tengah agar tidak mentok saat mundur
                 this.$refs.barisL.scrollLeft = this.$refs.barisL.scrollWidth / 2;
                 this.startAll();
             });
         },
         startAll() {
-            // Baris Atas: Ke Kanan (Normal)
             this.intervalR = setInterval(() => {
                 this.$refs.barisR.scrollLeft += 1;
                 if (this.$refs.barisR.scrollLeft >= this.$refs.barisR.scrollWidth / 2) {
@@ -20,7 +17,6 @@
                 }
             }, 30);
 
-            // Baris Bawah: Ke Kiri (Terbalik)
             this.intervalL = setInterval(() => {
                 this.$refs.barisL.scrollLeft -= 1;
                 if (this.$refs.barisL.scrollLeft <= 0) {
@@ -40,12 +36,10 @@
             <p class="text-xs md:text-base text-gray-500">Kepuasan kamu adalah prioritas kami</p>
         </div>
 
-        {{-- BARIS 1: Gerak ke Kanan --}}
         <div class="mb-6 relative">
             <div x-ref="barisR" 
                  @mouseenter="stopAll()" @mouseleave="startAll()"
                  class="flex overflow-x-auto gap-6 scrollbar-hide px-5">
-                {{-- Kita bagi data testimoninya agar tidak menumpuk semua --}}
                 @foreach($testimonis as $item)
                     @include('components.testimoni-card', ['item' => $item])
                 @endforeach
@@ -56,12 +50,10 @@
             </div>
         </div>
 
-        {{-- BARIS 2: Gerak ke Kiri --}}
         <div class="relative">
             <div x-ref="barisL" 
                  @mouseenter="stopAll()" @mouseleave="startAll()"
                  class="flex overflow-x-auto gap-6 scrollbar-hide px-5">
-                {{-- Gunakan data yang sama atau dibalik urutannya --}}
                 @foreach($testimonis->reverse() as $item)
                     @include('components.testimoni-card', ['item' => $item])
                 @endforeach

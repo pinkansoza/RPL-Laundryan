@@ -10,14 +10,11 @@
             <p class="text-xs md:text-base text-white">Pilih paket layanan yang sesuai dengan kebutuhan Anda</p>
         </div>
         
-        {{-- PERBAIKAN: Menggunakan Flexbox agar item otomatis di tengah (justify-center) --}}
         <div class="flex flex-wrap justify-center gap-5 md:gap-8">
 
             @foreach($layanans as $item)
-            {{-- Card Dinamis dengan penentuan lebar manual agar meniru grid --}}
             <div class="group relative bg-gradient-to-br from-white to-blue-50/30 backdrop-blur-sm rounded-2xl md:rounded-3xl p-6 md:p-8 shadow-md hover:shadow-2xl border border-white/50 transition-all duration-500 hover:-translate-y-1 w-full sm:w-[calc(50%-1.25rem)] lg:w-[calc(25%-2rem)] max-w-sm">
                 
-                {{-- Container Ikon --}}
                 <div class="w-12 h-12 md:w-14 md:h-14 {{ $item->warna }} rounded-xl md:rounded-2xl flex items-center justify-center mb-4 md:mb-5 shadow-lg group-hover:scale-110 transition-transform duration-500">
                     <x-dynamic-component :component="$item->ikon" class="w-6 h-6 md:w-[26px] md:h-[26px] text-white" />
                 </div>

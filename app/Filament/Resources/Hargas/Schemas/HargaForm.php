@@ -26,7 +26,6 @@ class HargaForm
                             ->required(),
                     ])->columns(2),
 
-                // REPEATER LEVEL 1: KATEGORI (e.g., Cuci Kiloan)
                 Repeater::make('konten')
                     ->label('Daftar Kategori & Layanan')
                     ->addActionLabel('Tambah Kategori Baru')
@@ -36,7 +35,6 @@ class HargaForm
                             ->placeholder('Contoh: Cuci Kiloan')
                             ->required(),
 
-                        // REPEATER LEVEL 2: ITEM (e.g., Cuci Kering Setrika)
                         Repeater::make('items')
                             ->label('Daftar Item/Layanan di Kategori Ini')
                             ->addActionLabel('Tambah Item & Harga')
@@ -53,7 +51,7 @@ class HargaForm
                             ->columns(2) 
                     ])
                     ->itemLabel(fn (array $state): ?string => $state['nama_kategori'] ?? 'Kategori Baru')
-                    ->collapsible(), // Biar bisa diringkas kalau sudah banyak
+                    ->collapsible(),
             ]);
     }
 }

@@ -1,6 +1,4 @@
-{{-- resources/views/components/testimoni-card.blade.php --}}
 <div class="w-[240px] md:w-[350px] flex-none group relative bg-gradient-to-br from-gray-50 to-white rounded-2xl md:rounded-3xl p-5 md:p-8 shadow-sm border border-gray-100 transition-all duration-300 hover:shadow-md">
-    {{-- Bintang (Lebih Kecil di Mobile) --}}
     <div class="flex text-primary mb-3 md:mb-5">
         @for($i = 0; $i < $item->bintang; $i++)
             <svg class="w-3.5 h-3.5 md:w-4 md:h-4 fill-current" viewBox="0 0 20 20">
@@ -9,12 +7,10 @@
         @endfor
     </div>
     
-    {{-- Pesan (Teks Lebih Kecil) --}}
     <p class="text-gray-600 italic mb-6 md:mb-8 text-[11px] md:text-sm leading-relaxed line-clamp-3">
         "{{ $item->pesan }}"
     </p>
 
-    {{-- User Info --}}
     <div class="flex items-center gap-3 md:gap-4 border-t border-gray-100 pt-4 md:pt-5">
         @if($item->foto_pelanggan)
             <img src="{{ asset('storage/' . $item->foto_pelanggan) }}" class="w-8 h-8 md:w-12 md:h-12 rounded-xl object-cover shadow-sm">

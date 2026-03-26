@@ -11,12 +11,10 @@
 
         <div class="md:order-first space-y-5 md:space-y-6">
             <div>
-                {{-- Judul tetap menggunakan {!! !!} --}}
                 <h2 class="text-2xl md:text-5xl font-extrabold text-gray-800 leading-snug md:leading-tight">
                     {!! $beranda->judul ?? 'Solusi Cerdas untuk <br> <span class="text-[#559dd4]">Pakaian Berkualitas</span>' !!}
                 </h2>
                 
-                {{-- PERBAIKAN: Hapus e() agar span warna bisa terbaca --}}
                 <p class="mt-3 md:mt-4 text-gray-600 text-xs md:text-lg leading-relaxed">
                     {!! nl2br($beranda->slogan ?? "Bisa antar jemput radius 3 km dari Laundry AK. \n <span class='text-[#89b252] font-bold'>Murah, Bersih, dan Wangi.</span>") !!}
                 </p>

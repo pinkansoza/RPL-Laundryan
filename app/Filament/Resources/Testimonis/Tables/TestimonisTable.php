@@ -24,7 +24,6 @@ class TestimonisTable
                     ->label('Nama Pelanggan')
                     ->searchable()
                     ->sortable()
-                    // PERBAIKAN: Gunakan string 'sm' untuk ukuran kecil
                     ->size('sm'), 
 
                 TextColumn::make('bintang')

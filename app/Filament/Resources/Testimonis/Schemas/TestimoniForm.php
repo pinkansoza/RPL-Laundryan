@@ -2,7 +2,7 @@
 
 namespace App\Filament\Resources\Testimonis\Schemas;
 
-use Filament\Schemas\Schema; // Tetap pakai ini sesuai Resource
+use Filament\Schemas\Schema;
 use Filament\Schemas\Components\Section;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Textarea;
@@ -12,7 +12,6 @@ use Filament\Forms\Components\Toggle;
 
 class TestimoniForm
 {
-    // Namanya disamakan dengan panggilan di Resource: 'configure'
     public static function configure(Schema $schema): Schema
     {
         return $schema

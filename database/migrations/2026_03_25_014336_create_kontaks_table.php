@@ -17,7 +17,7 @@ return new class extends Migration
             $table->string('whatsapp');
             $table->string('instagram')->nullable();
             $table->string('jam_operasional');
-            $table->text('url_gmaps'); // Pakai text karena URL iframe panjang
+            $table->text('url_gmaps');
             $table->timestamps();
         });
     }

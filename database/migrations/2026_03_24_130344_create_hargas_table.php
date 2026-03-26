@@ -13,9 +13,9 @@ return new class extends Migration
     {
         Schema::create('hargas', function (Blueprint $table) {
             $table->id();
-            $table->string('nama_paket'); // Contoh: REGULER
-            $table->string('estimasi');   // Contoh: 2-3 Hari Pengerjaan
-            $table->json('konten');       // TEMPAT REPEATER (Kategori & Item)
+            $table->string('nama_paket');
+            $table->string('estimasi');
+            $table->json('konten');
             $table->timestamps();
         });
     }
