@@ -8,7 +8,7 @@
         <div class="hidden lg:flex items-center space-x-4 text-gray-600 font-medium text-sm">
             <a href="#beranda" class="px-4 py-2 rounded-lg hover:bg-[#559dd4] hover:text-white transition-all duration-300">Beranda</a>
             <a href="#tentang" class="px-4 py-2 rounded-lg hover:bg-[#559dd4] hover:text-white transition-all duration-300">Layanan</a>
-            <a href="#layanan" class="px-4 py-2 rounded-lg hover:bg-[#559dd4] hover:text-white transition-all duration-300">Harga</a>
+            <a href="#harga" class="px-4 py-2 rounded-lg hover:bg-[#559dd4] hover:text-white transition-all duration-300">Harga</a>
             <a href="#alamat" class="px-4 py-2 rounded-lg hover:bg-[#559dd4] hover:text-white transition-all duration-300">Kontak</a>
             <button onclick="toggleModal()" class="bg-[#559dd4] text-white px-6 py-2 rounded-full font-bold hover:bg-cyan-600 shadow-md transition transform hover:scale-105 active:scale-95">
                 Laundry Sekarang
@@ -29,7 +29,7 @@
     <div id="mobile-menu" class="hidden lg:hidden bg-white border-t mt-4 space-y-2 p-4 pb-6 shadow-xl rounded-b-2xl">
         <a href="#beranda" class="mobile-link block p-4 text-gray-700 font-semibold hover:bg-[#559dd4] hover:text-white hover:translate-x-2 transform transition-all duration-300 rounded-xl">Beranda</a>
         <a href="#tentang" class="mobile-link block p-4 text-gray-700 font-semibold hover:bg-[#559dd4] hover:text-white hover:translate-x-2 transform transition-all duration-300 rounded-xl">Layanan</a>
-        <a href="#layanan" class="mobile-link block p-4 text-gray-700 font-semibold hover:bg-[#559dd4] hover:text-white hover:translate-x-2 transform transition-all duration-300 rounded-xl">Harga</a>
+        <a href="#harga" class="mobile-link block p-4 text-gray-700 font-semibold hover:bg-[#559dd4] hover:text-white hover:translate-x-2 transform transition-all duration-300 rounded-xl">Harga</a>
         <a href="#alamat" class="mobile-link block p-4 text-gray-700 font-semibold hover:bg-[#559dd4] hover:text-white hover:translate-x-2 transform transition-all duration-300 rounded-xl">Kontak</a>
     </div>
 </nav>

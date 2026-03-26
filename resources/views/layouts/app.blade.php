@@ -3,12 +3,31 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    {{-- SEO Meta Tags --}}
+    <meta name="description" content="Laundry AK - Solusi jasa laundry bersih, wangi, dan terpercaya dengan layanan antar jemput.">
     <link rel="icon" type="image/png" href="{{ asset('favicon.png') }}">
-    <title>Laundry AK</title>
     
+    {{-- Judul jadi dinamis --}}
+    <title>@yield('title') | Laundry AK</title> 
+    
+    <script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
     
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#89b252',
+                    }
+                }
+            }
+        }
+    </script>
+
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
+
     <style>
         html { scroll-behavior: smooth; }
         body { font-family: 'Inter', sans-serif; }
@@ -19,6 +38,15 @@
         }
         .animate-fade-in-up { animation: fadeInUp 0.4s ease-out forwards; }
         .modal-open { overflow: hidden; }
+        
+        /* Custom scrollbar utama */
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: #dad4d4ff; }
+        ::-webkit-scrollbar-thumb { background: #8a8a8aff; border-radius: 10px; }
+
+        /* Utilitas untuk menyembunyikan scrollbar pada elemen horizontal scroll */
+        .scrollbar-hide::-webkit-scrollbar { display: none; }
+        .scrollbar-hide { -ms-overflow-style: none; scrollbar-width: none; }
     </style>
 </head>
 <body class="bg-gray-50 text-gray-900">
@@ -31,14 +59,14 @@
 
     @include('components.footer')
 
+    {{-- Modal Pemesanan --}}
     <div id="order-modal" class="fixed inset-0 z-[99] hidden flex items-center justify-center p-4 sm:p-6">
         <div class="absolute inset-0 bg-gray-900/60 backdrop-blur-sm transition-opacity" onclick="toggleModal()"></div>
 
         <div class="relative bg-white w-full max-w-xl rounded-[2rem] md:rounded-[2.5rem] shadow-2xl overflow-hidden transform transition-all animate-fade-in-up">
             <div class="flex justify-between items-center p-6 border-b bg-white sticky top-0 z-10">
                 <div class="flex items-center gap-2">
-                    <span class="text-2xl">🧺</span>
-                    <h3 class="text-xl font-bold text-gray-800">Form Order Online</h3>
+                    <h3 class="text-xl font-bold text-gray-800">Form Pemesanan</h3>
                 </div>
                 <button onclick="toggleModal()" class="text-gray-400 hover:text-red-500 transition-colors p-2 bg-gray-100 rounded-full">
                     <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
@@ -70,5 +98,7 @@
             }
         });
     </script>
+
+    @stack('scripts')
 </body>
 </html>

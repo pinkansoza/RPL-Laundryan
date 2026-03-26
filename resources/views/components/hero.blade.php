@@ -3,18 +3,22 @@
         
         <div class="order-first md:order-last px-2 md:px-0">
             <div class="relative">
-                <img src="{{ asset('img/6.png') }}" class="relative w-full h-auto max-h-[220px] md:max-h-[500px] object-contain transition-all duration-500 drop-shadow-lg" alt="Laundry UNNES">
+                <img src="{{ ($beranda && $beranda->gambar) ? asset('storage/' . $beranda->gambar) : asset('img/6.png') }}" 
+                     class="relative w-full h-auto max-h-[220px] md:max-h-[500px] object-contain transition-all duration-500 drop-shadow-lg" 
+                     alt="Laundry UNNES">
             </div>
         </div>
 
         <div class="md:order-first space-y-5 md:space-y-6">
             <div>
+                {{-- Judul tetap menggunakan {!! !!} --}}
                 <h2 class="text-2xl md:text-5xl font-extrabold text-gray-800 leading-snug md:leading-tight">
-                    Solusi Cerdas untuk <br> <span class="text-[#559dd4]">Pakaian Berkualitas</span>
+                    {!! $beranda->judul ?? 'Solusi Cerdas untuk <br> <span class="text-[#559dd4]">Pakaian Berkualitas</span>' !!}
                 </h2>
+                
+                {{-- PERBAIKAN: Hapus e() agar span warna bisa terbaca --}}
                 <p class="mt-3 md:mt-4 text-gray-600 text-xs md:text-lg leading-relaxed">
-                    Bisa antar jemput radius 3 km dari Laundry AK. <br> 
-                    <span class="text-[#89b252] font-bold">Murah, Bersih, dan Wangi.</span>
+                    {!! nl2br($beranda->slogan ?? "Bisa antar jemput radius 3 km dari Laundry AK. \n <span class='text-[#89b252] font-bold'>Murah, Bersih, dan Wangi.</span>") !!}
                 </p>
             </div>
 
@@ -25,7 +29,7 @@
             </div>
             
             <div class="bg-white p-4 md:p-5 rounded-xl md:rounded-2xl shadow-md md:shadow-lg border border-gray-100 mx-auto md:mx-0 max-w-sm">
-                <label class="block text-[10px] font-black text-gray-400 uppercase tracking-widest mb-2">Cek Status Order</label>
+                <label class="block text-[10px] font-black text-gray-400 uppercase tracking-widest mb-2">Cek Status Laundryanmu</label>
                 <div class="flex gap-2">
                     <input type="text" placeholder="LDR-xxxx" 
                            class="flex-1 border-gray-200 rounded-lg md:rounded-xl p-2.5 md:p-3 text-sm focus:ring-blue-500 bg-gray-50 outline-none border focus:border-blue-300">
