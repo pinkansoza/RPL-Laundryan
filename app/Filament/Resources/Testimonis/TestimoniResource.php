@@ -19,7 +19,7 @@ class TestimoniResource extends Resource
 {
     protected static ?string $model = Testimoni::class;
 
-    protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedRectangleStack;
+    protected static string|BackedEnum|null $navigationIcon = "heroicon-o-chat-bubble-bottom-center-text";
 
     protected static ?string $recordTitleAttribute = 'Testimoni';
 

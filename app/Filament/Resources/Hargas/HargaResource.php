@@ -19,7 +19,7 @@ class HargaResource extends Resource
 {
     protected static ?string $model = Harga::class;
 
-    protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedRectangleStack;
+    protected static string|BackedEnum|null $navigationIcon = 'heroicon-o-currency-dollar';
 
     protected static ?string $recordTitleAttribute = 'harga';
 

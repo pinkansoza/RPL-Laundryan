@@ -19,7 +19,7 @@ class KontakResource extends Resource
 {
     protected static ?string $model = Kontak::class;
 
-    protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedAtSymbol; 
+    protected static string|BackedEnum|null $navigationIcon = "heroicon-o-phone"; 
 
     protected static ?string $recordTitleAttribute = 'alamat';
 

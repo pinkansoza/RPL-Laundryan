@@ -17,5 +17,10 @@ class Kontak extends Model
         'instagram',
         'jam_operasional',
         'url_gmaps',
+        'jam_pickup',
+    ];
+
+    protected $casts = [
+        'jam_pickup' => 'array',
     ];
 }

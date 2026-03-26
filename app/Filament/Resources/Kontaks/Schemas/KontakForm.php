@@ -39,6 +39,12 @@ class KontakForm
                                     ->label('Jam Operasional')
                                     ->placeholder('Setiap Hari: 07.00 - 21.00 WIB')
                                     ->required(),
+                                    
+                                \Filament\Forms\Components\TagsInput::make('jam_pickup')
+                                    ->label('Pilihan Jam Pickup')
+                                    ->placeholder('Ketik jam dan tekan Enter')
+                                    ->helperText('Tambahkan slot jam pickup. Contoh: 08.00 - 08.30. Pisahkan dengan menekan Enter.')
+                                    ->columnSpanFull(),
                             ]),
                     ]),
 

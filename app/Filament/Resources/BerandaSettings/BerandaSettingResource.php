@@ -18,7 +18,7 @@ class BerandaSettingResource extends Resource
 {
     protected static ?string $model = BerandaSetting::class;
 
-    protected static string|BackedEnum|null $navigationIcon = 'heroicon-o-rectangle-stack';
+    protected static string|BackedEnum|null $navigationIcon = 'heroicon-o-home';
 
     protected static ?string $recordTitleAttribute = 'judul';
     protected static UnitEnum|string|null $navigationGroup = 'Pengaturan Website';

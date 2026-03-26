@@ -26,15 +26,33 @@
                 </button>
             </div>
             
-            <div class="bg-white p-4 md:p-5 rounded-xl md:rounded-2xl shadow-md md:shadow-lg border border-gray-100 mx-auto md:mx-0 max-w-sm">
+            <div class="bg-white p-4 md:p-5 rounded-xl md:rounded-2xl shadow-md md:shadow-lg border border-gray-100 mx-auto md:mx-0 max-w-sm w-full">
                 <label class="block text-[10px] font-black text-gray-400 uppercase tracking-widest mb-2">Cek Status Laundryanmu</label>
-                <div class="flex gap-2">
-                    <input type="text" placeholder="LDR-xxxx" 
-                           class="flex-1 border-gray-200 rounded-lg md:rounded-xl p-2.5 md:p-3 text-sm focus:ring-blue-500 bg-gray-50 outline-none border focus:border-blue-300">
-                    <button class="bg-[#89b252] text-white px-5 py-2.5 md:py-3 rounded-lg md:rounded-xl font-bold text-sm hover:bg-green-600 transition shadow-md">
+                <form action="{{ route('home') }}#beranda" method="GET" class="flex gap-2">
+                    <input type="text" name="kode" value="{{ request('kode') }}" placeholder="LDR-0000X" 
+                           class="flex-1 w-full border-gray-200 rounded-lg md:rounded-xl p-2.5 md:p-3 text-sm focus:ring-[#559dd4] bg-gray-50 outline-none border focus:border-[#559dd4]/50">
+                    <button type="submit" class="bg-[#89b252] text-white px-5 py-2.5 md:py-3 rounded-lg md:rounded-xl font-bold text-sm hover:bg-green-600 transition shadow-md">
                         Cek
                     </button>
-                </div>
+                </form>
+                
+                @if(request()->filled('kode'))
+                    @if($trackingResult)
+                        <!-- Call Alpine Modal -->
+                        <div x-data="{ showTrackingModal: true }" @keydown.escape.window="showTrackingModal = false; setTimeout(() => window.history.replaceState({}, '', window.location.pathname), 300);">
+                            <template x-teleport="body">
+                                <div>
+                                    @include('components.cekstatuslaundry', ['data' => $trackingResult])
+                                </div>
+                            </template>
+                        </div>
+                    @else
+                        <div class="mt-4 p-4 rounded-xl border bg-red-50 border-red-200">
+                            <p class="font-bold text-sm text-red-700">Pesanan tidak ditemukan!</p>
+                            <p class="text-[11px] text-red-500 mt-1 leading-tight">Pastikan kode yang kamu masukkan benar (Contoh: LDR-XXXXX).</p>
+                        </div>
+                    @endif
+                @endif
             </div>
         </div>
 

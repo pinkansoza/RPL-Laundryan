@@ -7,7 +7,7 @@
     <meta name="description" content="Laundry AK - Solusi jasa laundry bersih, wangi, dan terpercaya dengan layanan antar jemput.">
     <link rel="icon" type="image/png" href="{{ asset('favicon.png') }}">
     
-    <title>@yield('title') | Laundry AK</title> 
+    <title>Laundry AK</title> 
     
     <script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>
     <script src="https://cdn.tailwindcss.com"></script>
@@ -59,12 +59,10 @@
     <div id="order-modal" class="fixed inset-0 z-[99] hidden flex items-center justify-center p-4 sm:p-6">
         <div class="absolute inset-0 bg-gray-900/60 backdrop-blur-sm transition-opacity" onclick="toggleModal()"></div>
 
-        <div class="relative bg-white w-full max-w-xl rounded-[2rem] md:rounded-[2.5rem] shadow-2xl overflow-hidden transform transition-all animate-fade-in-up">
-            <div class="flex justify-between items-center p-6 border-b bg-white sticky top-0 z-10">
-                <div class="flex items-center gap-2">
-                    <h3 class="text-xl font-bold text-gray-800">Form Pemesanan</h3>
-                </div>
-                <button onclick="toggleModal()" class="text-gray-400 hover:text-red-500 transition-colors p-2 bg-gray-100 rounded-full">
+        <div class="relative bg-white w-full max-w-5xl rounded-[2rem] md:rounded-[2.5rem] shadow-2xl overflow-hidden transform transition-all animate-fade-in-up">
+            <div class="flex justify-center items-center p-6 border-b bg-white sticky top-0 z-10 relative">
+                <h3 class="text-xl font-bold text-gray-800 text-center w-full">Form Pemesanan Laundry</h3>
+                <button onclick="toggleModal()" class="absolute right-6 text-gray-400 hover:text-rose-500 transition-colors p-2 bg-gray-50 hover:bg-rose-50 rounded-full">
                     <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
                 </button>
             </div>
