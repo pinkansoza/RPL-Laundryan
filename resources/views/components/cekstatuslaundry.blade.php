@@ -45,7 +45,7 @@
             <!-- Header Section -->
             <div class="mb-4 text-center">
                 <span class="inline-block bg-emerald-100 text-emerald-800 text-[9px] font-black tracking-widest uppercase px-2.5 py-1 rounded-full mb-2">Live Tracking</span>
-                <h2 class="text-2xl sm:text-3xl font-black text-gray-900 tracking-tight">{{ $data->kode_pesanan }}</h2>
+                <h2 class="text-2xl sm:text-3xl font-black text-gray-900">{{ $data->kode_pesanan }}</h2>
                 <p class="text-[13px] sm:text-sm font-semibold text-gray-600 mt-0.5">{{ $headline }}</p>
             </div>
 

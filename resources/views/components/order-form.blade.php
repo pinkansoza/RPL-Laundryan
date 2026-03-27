@@ -38,6 +38,9 @@
         pengiriman: "Antar Sendiri", 
         berat: 0,
         itemSatuan: 1,
+        jamPicked: "",
+        pickupLocationReady: false,
+        showPickupWarning: false,
 
         prices: @json($parsedPrices ?? []),
 
@@ -58,6 +61,18 @@
         get totalHarga() {
             let total = this.totalHargaInt;
             return total > 0 ? "Rp " + total.toLocaleString("id-ID") : "Rp 0";
+        },
+
+        validatePickup() {
+            if (this.pengiriman !== "Pickup") return true;
+            const alamatField = document.querySelector("textarea[name=detail_alamat]");
+            const hasAlamat = alamatField && alamatField.value.trim().length > 0;
+            if (!this.jamPicked || (!this.pickupLocationReady && !hasAlamat)) {
+                this.showPickupWarning = true;
+                return false;
+            }
+            this.showPickupWarning = false;
+            return true;
         }
     }' class="w-full"> <!-- Container form bersih tanpa background atau kotak luar -->
 
@@ -107,27 +122,27 @@
         </div>
     @endif
 
-    <form action="{{ route('order.store') }}" method="POST" class="grid grid-cols-1 md:grid-cols-2 gap-6 lg:gap-10 pt-2">
+    <form action="{{ route('order.store') }}" method="POST" class="grid grid-cols-1 md:grid-cols-2 gap-4 lg:gap-8 pt-1" x-on:submit="if(!validatePickup()) { $event.preventDefault(); }">
         @csrf
         
         <!-- Sisi Kiri: Data & Layanan -->
-        <div class="flex flex-col space-y-4">
-            <h3 class="text-sm md:text-base font-black text-gray-800 uppercase tracking-widest border-l-4 border-[#559dd4] pl-3 mb-2">Identitas & Layanan</h3>
+        <div class="flex flex-col space-y-3 lg:space-y-3">
+            <h3 class="text-sm md:text-base font-semibold text-gray-800 border-l-4 border-[#559dd4] pl-3 mb-1">Identitas & Layanan</h3>
             
             <div>
-                <label class="block text-xs font-bold text-gray-500 tracking-wide mb-1.5 pl-1">Nama Lengkap</label>
-                <input type="text" name="nama" placeholder="Ketik nama anda..." required class="w-full bg-gray-50 border border-gray-200 rounded-xl px-3 py-2.5 text-xs md:text-sm font-medium text-gray-900 placeholder-gray-400 focus:bg-white focus:border-[#559dd4] focus:ring-4 focus:ring-[#559dd4]/20 outline-none transition-all">
+                <label class="block text-xs font-bold text-gray-500 tracking-wide mb-1 pl-1">Nama</label>
+                <input type="text" name="nama" placeholder="Ketik nama anda..." required class="w-full bg-gray-50 border border-gray-200 rounded-xl px-3 py-2 text-xs md:text-sm font-medium text-gray-900 placeholder-gray-400 focus:bg-white focus:border-[#559dd4] focus:ring-4 focus:ring-[#559dd4]/20 outline-none transition-all">
             </div>
 
             <div>
-                <label class="block text-xs font-bold text-gray-500 tracking-wide mb-1.5 pl-1">Nomor WhatsApp</label>
-                <input type="number" name="wa" placeholder="08..." required class="w-full bg-gray-50 border border-gray-200 rounded-xl px-3 py-2.5 text-xs md:text-sm font-medium text-gray-900 placeholder-gray-400 focus:bg-white focus:border-[#559dd4] focus:ring-4 focus:ring-[#559dd4]/20 outline-none transition-all">
+                <label class="block text-xs font-bold text-gray-500 tracking-wide mb-1 pl-1">Nomor WhatsApp</label>
+                <input type="number" name="wa" placeholder="08..." required class="w-full bg-gray-50 border border-gray-200 rounded-xl px-3 py-2 text-xs md:text-sm font-medium text-gray-900 placeholder-gray-400 focus:bg-white focus:border-[#559dd4] focus:ring-4 focus:ring-[#559dd4]/20 outline-none transition-all">
             </div>
 
             <div class="grid grid-cols-2 gap-4">
                 <div>
                     <label class="block text-xs font-bold text-gray-500 tracking-wide mb-1.5 pl-1">Paket</label>
-                    <select name="paket" x-model="paket" required class="w-full bg-gray-50 border border-gray-200 rounded-xl px-3 py-2.5 text-xs md:text-sm font-bold text-gray-900 focus:bg-white focus:border-[#559dd4] focus:ring-4 focus:ring-[#559dd4]/20 outline-none transition-all cursor-pointer">
+                    <select name="paket" x-model="paket" required class="w-full bg-gray-50 border border-gray-200 rounded-xl px-3 py-2.5 text-xs md:text-sm font-semibold text-gray-900 focus:bg-white focus:border-[#559dd4] focus:ring-4 focus:ring-[#559dd4]/20 outline-none transition-all cursor-pointer">
                         @foreach($hargasList as $harga)
                             <option value="{{ $harga->nama_paket }}">{{ $harga->nama_paket }}</option>
                         @endforeach
@@ -135,7 +150,7 @@
                 </div>
                 <div>
                     <label class="block text-xs font-bold text-gray-500 tracking-wide mb-1.5 pl-1">Jenis Layanan</label>
-                    <select name="layanan" x-model="layanan" required class="w-full bg-gray-50 border border-gray-200 rounded-xl px-3 py-2.5 text-xs md:text-sm font-bold text-gray-900 focus:bg-white focus:border-[#559dd4] focus:ring-4 focus:ring-[#559dd4]/20 outline-none transition-all cursor-pointer">
+                    <select name="layanan" x-model="layanan" required class="w-full bg-gray-50 border border-gray-200 rounded-xl px-3 py-2.5 text-xs md:text-sm font-semibold text-gray-900 focus:bg-white focus:border-[#559dd4] focus:ring-4 focus:ring-[#559dd4]/20 outline-none transition-all cursor-pointer">
                         @forelse($firstKontenArray as $kategori)
                             <optgroup label="{{ $kategori['nama_kategori'] ?? '' }}">
                                 @if(isset($kategori['items']))
@@ -159,12 +174,12 @@
                 <div>
                     <label class="block text-xs font-bold text-gray-500 tracking-wide mb-1.5 pl-1">Berat (Kg)</label>
                     <input name="berat" x-model="berat" type="number" step="0.1" min="0.1" :disabled="isSatuan()" :required="!isSatuan()" placeholder="0"
-                           class="w-full border rounded-xl px-3 py-2.5 text-xs md:text-sm font-black outline-none transition-all focus:ring-4" :class="isSatuan() ? 'bg-gray-100 border-gray-100 text-gray-400 cursor-not-allowed' : 'bg-gray-50 border-gray-200 text-gray-900 focus:bg-white focus:border-[#559dd4] focus:ring-[#559dd4]/20'">
+                           class="w-full border rounded-xl px-3 py-2.5 text-xs md:text-sm font-semibold outline-none transition-all focus:ring-4" :class="isSatuan() ? 'bg-gray-100 border-gray-100 text-gray-400 cursor-not-allowed' : 'bg-gray-50 border-gray-200 text-gray-900 focus:bg-white focus:border-[#559dd4] focus:ring-[#559dd4]/20'">
                 </div>
                 <div>
                     <label class="block text-xs font-bold text-gray-500 tracking-wide mb-1.5 pl-1">Jumlah Item (Pcs)</label>
                     <input name="itemSatuan" x-model="itemSatuan" type="number" min="1" :disabled="!isSatuan()" :required="isSatuan()" placeholder="1"
-                           class="w-full border rounded-xl px-3 py-2.5 text-xs md:text-sm font-black outline-none transition-all focus:ring-4" :class="!isSatuan() ? 'bg-gray-100 border-gray-100 text-gray-400 cursor-not-allowed' : 'bg-gray-50 border-gray-200 text-gray-900 focus:bg-white focus:border-[#559dd4] focus:ring-[#559dd4]/20'">
+                           class="w-full border rounded-xl px-3 py-2.5 text-xs md:text-sm font-semibold outline-none transition-all focus:ring-4" :class="!isSatuan() ? 'bg-gray-100 border-gray-100 text-gray-400 cursor-not-allowed' : 'bg-gray-50 border-gray-200 text-gray-900 focus:bg-white focus:border-[#559dd4] focus:ring-[#559dd4]/20'">
                 </div>
             </div>
 
@@ -175,10 +190,10 @@
             </div>
 
             <!-- Harga & Pembayaran (Sisi Kiri Bawah) -->
-            <div class="mt-4 pt-5 lg:mt-6 lg:pt-6 border-t border-gray-100 flex justify-between items-center gap-4">
+            <div class="mt-3 pt-4 lg:mt-4 lg:pt-4 border-t border-gray-100 flex justify-between items-center gap-4">
                 <div>
                     <p class="text-[11px] md:text-xs font-bold text-gray-400 tracking-wide mb-0.5">Total Estimasi Harga</p>
-                    <p class="text-2xl md:text-3xl font-black text-[#559dd4] tracking-tighter" x-text="totalHarga"></p>
+                    <p class="text-xl md:text-2xl font-bold text-[#559dd4]" x-text="totalHarga"></p>
                     <input type="hidden" name="total_estimasi" :value="totalHargaInt">
                 </div>
                 <div class="min-w-[130px] md:min-w-[150px]">
@@ -192,13 +207,13 @@
         </div>
 
         <!-- Sisi Kanan: Logistik & Waktu -->
-        <div class="flex flex-col space-y-4 shadow-sm md:shadow-none bg-gray-50/30 md:bg-transparent rounded-2xl md:rounded-none p-4 md:p-0 border border-gray-100 md:border-none">
-            <h3 class="text-sm md:text-base font-black text-gray-800 uppercase tracking-widest border-l-4 border-[#559dd4] pl-3 mb-2">Logistik Pengiriman</h3>
+        <div class="flex flex-col space-y-3 lg:space-y-3 shadow-sm md:shadow-none bg-gray-50/30 md:bg-transparent">
+            <h3 class="text-sm md:text-base font-semibold text-gray-800 border-l-4 border-[#559dd4] pl-3 mb-1">Logistik Pengiriman</h3>
 
             <div class="grid grid-cols-2 gap-4">
                 <div>
                     <label class="block text-xs font-bold text-gray-500 tracking-wide mb-1.5 pl-1">Pengiriman</label>
-                    <select name="pengiriman" x-model="pengiriman" class="w-full bg-gray-50 border border-gray-200 rounded-xl px-3 py-2.5 text-xs md:text-sm font-bold text-gray-900 focus:bg-white focus:border-[#559dd4] focus:ring-4 focus:ring-[#559dd4]/20 outline-none transition-all cursor-pointer">
+                    <select name="pengiriman" x-model="pengiriman" class="w-full bg-gray-50 border border-gray-200 rounded-xl px-3 py-2.5 text-xs md:text-sm font-semibold text-gray-900 focus:bg-white focus:border-[#559dd4] focus:ring-4 focus:ring-[#559dd4]/20 outline-none transition-all cursor-pointer">
                         <option value="Antar Sendiri">Antar ke Outlet</option>
                         <option value="Pickup">Kurir Jemput</option>
                     </select>
@@ -206,7 +221,7 @@
 
                 <div>
                     <label class="block text-xs font-bold text-gray-500 tracking-wide mb-1.5 pl-1" x-text="pengiriman === 'Antar Sendiri' ? '-' : 'Jam Pickup'"></label>
-                    <select name="jam" class="w-full border rounded-xl px-3 py-2.5 text-xs md:text-sm font-bold outline-none transition-all focus:ring-4" :disabled="pengiriman === 'Antar Sendiri'" :class="pengiriman === 'Antar Sendiri' ? 'bg-gray-100 border-gray-100 text-gray-400 cursor-not-allowed' : 'bg-gray-50 border-gray-200 text-gray-900 focus:bg-white focus:border-[#559dd4] focus:ring-[#559dd4]/20 cursor-pointer'">
+                    <select name="jam" x-model="jamPicked" class="w-full border rounded-xl px-3 py-2.5 text-xs md:text-sm font-bold outline-none transition-all focus:ring-4" :disabled="pengiriman === 'Antar Sendiri'" :class="pengiriman === 'Antar Sendiri' ? 'bg-gray-100 border-gray-100 text-gray-400 cursor-not-allowed' : (showPickupWarning && !jamPicked ? 'bg-red-50 border-red-300 text-gray-900 focus:bg-white focus:border-red-400 focus:ring-red-200/50 cursor-pointer' : 'bg-gray-50 border-gray-200 text-gray-900 focus:bg-white focus:border-[#559dd4] focus:ring-[#559dd4]/20 cursor-pointer')">
                         <option value="" disabled selected>Pilih Jam...</option>
                         @forelse($jamPickups as $jam)
                             <option value="{{ $jam }}">{{ $jam }}</option>
@@ -217,6 +232,7 @@
                             <option value="09.30 - 10.00">09.30 - 10.00 (Default)</option>
                         @endforelse
                     </select>
+                    <p x-show="showPickupWarning && !jamPicked" x-transition class="text-[10px] font-semibold text-red-500 mt-1 pl-1">⚠ Pilih jam pickup</p>
                 </div>
             </div>
 
@@ -228,7 +244,7 @@
                     <div class="flex items-start gap-4 mb-3">
                         <div class="w-10 h-10 rounded-full bg-white flex items-center justify-center shadow-[0_2px_10px_rgba(0,0,0,0.06)] shrink-0 text-lg">📍</div>
                         <div class="flex flex-col justify-center flex-1">
-                            <p class="text-xs md:text-sm font-bold text-gray-800 leading-snug">{{ $kontak->alamat ?? 'Jl. Laundry No. 123, Blok A' }}</p>
+                            <p class="text-xs md:text-sm font-semibold text-gray-800 leading-snug">{{ $kontak->alamat ?? 'Jl. Laundry No. 123, Blok A' }}</p>
                             <p class="text-[11px] md:text-xs text-gray-500 mt-1">Silakan bawa pesanan ke outlet kami.</p>
                         </div>
                     </div>
@@ -276,7 +292,7 @@
                             });
                         }
                      }" 
-                     x-init="$watch('showMap', value => { if(value) { setTimeout(() => initMap(), 100); } })">
+                     x-init="$watch('locationPinned', val => { pickupLocationReady = val; }); $watch('showMap', value => { if(value) { setTimeout(() => initMap(), 100); } })">
                     
                     <input type="hidden" name="pickup_lat" :value="lat">
                     <input type="hidden" name="pickup_lng" :value="lng">
@@ -288,7 +304,8 @@
                         <button type="button" @click="showMap = !showMap" class="bg-[#559dd4]/10 hover:bg-[#559dd4]/20 text-[#4a8bc0] px-3 py-1 rounded-full text-[10px] md:text-xs font-bold flex items-center gap-1 transition border border-[#559dd4]/30" x-text="showMap ? 'Tutup Peta' : '📍 Buka Peta'"></button>
                     </div>
                     
-                    <textarea name="detail_alamat" x-show="!showMap" rows="3" class="w-full h-[100px] bg-gray-50 px-3 py-2.5 rounded-xl border border-gray-200 text-xs md:text-sm outline-none resize-none font-medium placeholder-gray-400 text-gray-900 focus:bg-white focus:border-[#559dd4] focus:ring-4 focus:ring-[#559dd4]/20 transition" placeholder="Ketikan detail jalan atau patokan rumah..."></textarea>
+                    <textarea name="detail_alamat" x-show="!showMap" rows="3" @input="pickupLocationReady = $el.value.trim().length > 0 || locationPinned" class="w-full h-[100px] bg-gray-50 px-3 py-2.5 rounded-xl border text-xs md:text-sm outline-none resize-none font-medium placeholder-gray-400 text-gray-900 focus:bg-white focus:ring-4 transition" :class="showPickupWarning && !pickupLocationReady ? 'border-red-300 focus:border-red-400 focus:ring-red-200/50' : 'border-gray-200 focus:border-[#559dd4] focus:ring-[#559dd4]/20'" placeholder="Ketikan detail jalan atau patokan rumah..."></textarea>
+                    <p x-show="showPickupWarning && !pickupLocationReady && !showMap" x-transition class="text-[10px] font-semibold text-red-500 mt-1 pl-1">⚠ Isi alamat dan pilih titik di peta</p>
                     
                     <!-- Peta Interaktif Leaflet UI -->
                     <div x-show="showMap" style="display: none;" class="w-full h-[320px] rounded-xl overflow-hidden relative border border-[#559dd4]/30 mt-1">
@@ -315,6 +332,20 @@
                         </button>
                     </div>
                 </div>
+            </div>
+
+            <!-- Peringatan Pickup Belum Lengkap -->
+            <div x-show="showPickupWarning" x-transition:enter="transition ease-out duration-300" x-transition:enter-start="opacity-0 -translate-y-2" x-transition:enter-end="opacity-100 translate-y-0" style="display: none;" class="mt-2 bg-amber-50 border border-amber-200 rounded-xl px-4 py-3 flex items-start gap-3">
+                <div class="w-8 h-8 rounded-full bg-amber-100 flex items-center justify-center shrink-0 mt-0.5">
+                    <svg class="w-4 h-4 text-amber-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L4.082 16.5c-.77.833.192 2.5 1.732 2.5z"></path></svg>
+                </div>
+                <div>
+                    <p class="text-xs font-bold text-amber-800">Lengkapi data pickup</p>
+                    <p class="text-[10px] text-amber-600 mt-0.5">Pilih jam pickup dan isi alamat & tandai lokasi di peta sebelum melanjutkan.</p>
+                </div>
+                <button type="button" @click="showPickupWarning = false" class="ml-auto text-amber-400 hover:text-amber-600 shrink-0 p-1">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                </button>
             </div>
 
             <!-- Tombol Utama Super Kontras -->

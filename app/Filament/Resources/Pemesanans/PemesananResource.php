@@ -18,9 +18,15 @@ class PemesananResource extends Resource
 {
     protected static ?string $model = Pemesanan::class;
 
-    protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedRectangleStack;
+    protected static string|BackedEnum|null $navigationIcon = "heroicon-o-shopping-cart";
 
     protected static ?string $recordTitleAttribute = 'nama_pelanggan';
+
+    protected static ?string $navigationLabel = 'Pemesanan';
+
+    protected static ?string $pluralLabel = 'Pemesanan';
+
+    protected static ?string $label = 'Pemesanan';
 
     public static function form(Schema $schema): Schema
     {
