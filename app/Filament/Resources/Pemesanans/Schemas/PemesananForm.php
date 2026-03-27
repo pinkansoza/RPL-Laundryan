@@ -48,7 +48,7 @@ class PemesananForm
     public static function isKiloan(\Filament\Schemas\Components\Utilities\Get $get): bool
     {
         $jenisLayanan = $get('jenis_layanan');
-        if (!$jenisLayanan) return true; // Asumsi default
+        if (!$jenisLayanan) return true;
 
         $paket = $get('paket');
         if (!$paket) $paket = 'REGULER'; 
@@ -77,15 +77,15 @@ class PemesananForm
                     ->dehydrated(false)
                     ->placeholder('Otomatis LDR-XXXXX')
                     ->maxLength(255),
-                TextInput::make('nama_pelanggan')
-                    ->required(),
-                TextInput::make('nomor_whatsapp')
-                    ->required(),
+                TextInput::make('nama_pelanggan')->required(),
+                TextInput::make('nomor_whatsapp')->required(),
+                
                 \Filament\Forms\Components\Select::make('paket')
                     ->options(\App\Models\Harga::pluck('nama_paket', 'nama_paket'))
                     ->live()
                     ->afterStateUpdated(fn (\Filament\Schemas\Components\Utilities\Set $set, \Filament\Schemas\Components\Utilities\Get $get) => self::updateEstimasiHarga($set, $get))
                     ->required(),
+                    
                 \Filament\Forms\Components\Select::make('jenis_layanan')
                     ->options(function () {
                         $options = [];
@@ -111,12 +111,14 @@ class PemesananForm
                     ->live()
                     ->afterStateUpdated(fn (\Filament\Schemas\Components\Utilities\Set $set, \Filament\Schemas\Components\Utilities\Get $get) => self::updateEstimasiHarga($set, $get))
                     ->required(),
+                    
                 TextInput::make('berat')
                     ->numeric()
                     ->visible(fn (\Filament\Schemas\Components\Utilities\Get $get) => self::isKiloan($get))
                     ->live(onBlur: true)
                     ->afterStateUpdated(fn (\Filament\Schemas\Components\Utilities\Set $set, \Filament\Schemas\Components\Utilities\Get $get) => self::updateEstimasiHarga($set, $get))
                     ->default(null),
+                    
                 TextInput::make('jumlah_item')
                     ->numeric()
                     ->integer()
@@ -124,24 +126,38 @@ class PemesananForm
                     ->live(onBlur: true)
                     ->afterStateUpdated(fn (\Filament\Schemas\Components\Utilities\Set $set, \Filament\Schemas\Components\Utilities\Get $get) => self::updateEstimasiHarga($set, $get))
                     ->default(null),
+                    
                 TextInput::make('total_estimasi_harga')
                     ->required()
                     ->numeric(),
+                    
                 \Filament\Forms\Components\Select::make('metode_pembayaran')
                     ->options([
-                        'Tunai' => 'Tunai',
+                        'Cash' => 'Cash',
                         'QRIS' => 'QRIS',
                     ])
                     ->required(),
+
+                // --- BAGIAN INI YANG DIROMBAK MENJADI 2 ---
                 \Filament\Forms\Components\Select::make('metode_pengiriman')
+                    ->label('Kirim (Pakaian Kotor)')
                     ->options([
-                        'Antar Sendiri - Ambil Sendiri' => 'Antar Sendiri - Ambil Sendiri',
-                        'Antar Sendiri - Diantar Laundry' => 'Antar Sendiri - Diantar Laundry',
-                        'Pickup Laundry - Ambil Sendiri' => 'Pickup Laundry - Ambil Sendiri',
-                        'Pickup Laundry - Diantar Laundry' => 'Pickup Laundry - Diantar Laundry',
+                        'Antar Sendiri' => 'Pelanggan Antar Sendiri',
+                        'Pickup' => 'Kurir Menjemput (Pickup)',
                     ])
                     ->live()
                     ->required(),
+
+                \Filament\Forms\Components\Select::make('metode_pengambilan')
+                    ->label('Ambil (Pakaian Bersih)')
+                    ->options([
+                        'Ambil Sendiri' => 'Pelanggan Ambil Sendiri',
+                        'Diantar Laundry' => 'Kurir Mengantar',
+                    ])
+                    ->live()
+                    ->required(),
+                // ------------------------------------------
+
                 \Filament\Forms\Components\Select::make('jam_pickup')
                     ->options(function () {
                         $kontak = \App\Models\Kontak::first();
@@ -152,10 +168,13 @@ class PemesananForm
                         return [];
                     })
                     ->visible(function (\Filament\Schemas\Components\Utilities\Get $get) {
-                        $mp = $get('metode_pengiriman') ?? '';
-                        return str_contains($mp, 'Pickup Laundry') || str_contains($mp, 'Diantar Laundry');
+                        // LOGIKA CERDAS: Cek kedua field!
+                        $kirim = $get('metode_pengiriman') ?? '';
+                        $ambil = $get('metode_pengambilan') ?? '';
+                        return str_contains($kirim, 'Pickup') || str_contains($ambil, 'Diantar');
                     })
                     ->default(null),
+
                 \Dotswan\MapPicker\Fields\Map::make('titik_pickup')
                     ->label('Titik Pickup')
                     ->columnSpanFull()
@@ -179,21 +198,27 @@ class PemesananForm
                     ->showZoomControl(true)
                     ->showMyLocationButton(true)
                     ->visible(function (\Filament\Schemas\Components\Utilities\Get $get) {
-                        $mp = $get('metode_pengiriman') ?? '';
-                        return str_contains($mp, 'Pickup Laundry') || str_contains($mp, 'Diantar Laundry');
+                        $kirim = $get('metode_pengiriman') ?? '';
+                        $ambil = $get('metode_pengambilan') ?? '';
+                        return str_contains($kirim, 'Pickup') || str_contains($ambil, 'Diantar');
                     }),
+
                 \Filament\Forms\Components\Hidden::make('pickup_lat'),
                 \Filament\Forms\Components\Hidden::make('pickup_lng'),
+
                 Textarea::make('detail_alamat')
                     ->visible(function (\Filament\Schemas\Components\Utilities\Get $get) {
-                        $mp = $get('metode_pengiriman') ?? '';
-                        return str_contains($mp, 'Pickup Laundry') || str_contains($mp, 'Diantar Laundry');
+                        $kirim = $get('metode_pengiriman') ?? '';
+                        $ambil = $get('metode_pengambilan') ?? '';
+                        return str_contains($kirim, 'Pickup') || str_contains($ambil, 'Diantar');
                     })
                     ->default(null)
                     ->columnSpanFull(),
+
                 Textarea::make('catatan')
                     ->default(null)
                     ->columnSpanFull(),
+                    
                 \Filament\Forms\Components\Select::make('status')
                     ->options([
                         'Diterima' => 'Diterima',

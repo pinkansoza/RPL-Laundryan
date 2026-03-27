@@ -11,8 +11,9 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::table('pemesanans', function (Blueprint $table) {
-            $table->string('metode_pengambilan')->nullable()->after('metode_pengiriman');
+        Schema::create('pelanggans', function (Blueprint $table) {
+            $table->id();
+            $table->timestamps();
         });
     }
 
@@ -21,8 +22,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::table('pemesanans', function (Blueprint $table) {
-            $table->dropColumn('metode_pengambilan');
-        });
+        Schema::dropIfExists('pelanggans');
     }
 };

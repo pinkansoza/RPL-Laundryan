@@ -22,6 +22,7 @@ class Pemesanan extends Model
         'total_estimasi_harga',
         'metode_pembayaran',
         'metode_pengiriman',
+        'metode_pengambilan',
         'jam_pickup',
         'pickup_lat',
         'pickup_lng',

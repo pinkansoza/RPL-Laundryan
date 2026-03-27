@@ -199,7 +199,7 @@
                 <div class="min-w-[130px] md:min-w-[150px]">
                     <label class="block text-[11px] font-bold text-gray-500 tracking-wide mb-1.5 pl-1">Pembayaran</label>
                     <select name="pembayaran" class="w-full bg-[#559dd4]/10 border border-[#559dd4]/30 text-[#3b7ba8] rounded-xl px-3 py-2.5 text-xs md:text-sm font-bold focus:bg-white focus:border-[#559dd4] focus:ring-4 focus:ring-[#559dd4]/20 outline-none transition-all cursor-pointer">
-                        <option value="Cash">Tunai</option>
+                        <option value="Cash">Cash</option>
                         <option value="QRIS">QRIS</option>
                     </select>
                 </div>

@@ -53,9 +53,31 @@ class PemesanansTable
                 TextColumn::make('metode_pembayaran')
                     ->searchable()
                     ->toggleable(isToggledHiddenByDefault: true),
+                
+                // --- DIPISAH JADI 2 KOLOM (KIRIM & AMBIL) ---
                 TextColumn::make('metode_pengiriman')
+                    ->label('Kirim (Kotor)')
                     ->searchable()
+                    ->badge()
+                    ->color(fn (string $state): string => match ($state) {
+                        'Antar Sendiri' => 'gray',
+                        'Pickup' => 'warning', // Match dengan form frontend
+                        'Pickup Laundry' => 'warning',
+                        default => 'primary',
+                    })
                     ->toggleable(),
+                TextColumn::make('metode_pengambilan')
+                    ->label('Ambil (Bersih)')
+                    ->searchable()
+                    ->badge()
+                    ->color(fn (string $state): string => match ($state) {
+                        'Ambil Sendiri' => 'gray',
+                        'Diantar Laundry' => 'success',
+                        default => 'danger', // Merah kalau masih kosong/belum diatur admin
+                    })
+                    ->toggleable(),
+                // ---------------------------------------------
+
                 TextColumn::make('jam_pickup')
                     ->searchable()
                     ->toggleable(isToggledHiddenByDefault: true),
@@ -129,14 +151,20 @@ class PemesanansTable
                     ->label('Paket')
                     ->options(fn () => Pemesanan::query()->distinct()->pluck('paket', 'paket')->toArray()),
 
+                // --- FILTER DIPISAH JADI 2 ---
                 SelectFilter::make('metode_pengiriman')
-                    ->label('Pengiriman')
+                    ->label('Kirim (Kotor)')
                     ->options([
-                        'Antar Sendiri - Ambil Sendiri' => 'Antar Sendiri - Ambil Sendiri',
-                        'Antar Sendiri - Diantar Laundry' => 'Antar Sendiri - Diantar Laundry',
-                        'Pickup Laundry - Ambil Sendiri' => 'Pickup Laundry - Ambil Sendiri',
-                        'Pickup Laundry - Diantar Laundry' => 'Pickup Laundry - Diantar Laundry',
+                        'Antar Sendiri' => 'Antar Sendiri',
+                        'Pickup' => 'Pickup oleh Kurir',
                     ]),
+                SelectFilter::make('metode_pengambilan')
+                    ->label('Ambil (Bersih)')
+                    ->options([
+                        'Ambil Sendiri' => 'Ambil Sendiri',
+                        'Diantar Laundry' => 'Diantar Laundry',
+                    ]),
+                // -----------------------------
 
                 SelectFilter::make('status')
                     ->label('Status')
