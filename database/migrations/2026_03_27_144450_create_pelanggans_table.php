@@ -6,20 +6,20 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
-    /**
-     * Run the migrations.
-     */
     public function up(): void
     {
         Schema::create('pelanggans', function (Blueprint $table) {
             $table->id();
+            $table->string('nama');
+            // Nomor WA kita buat unik biar nggak ada data pelanggan kembar
+            $table->string('nomor_whatsapp')->unique(); 
+            $table->string('pickup_lat')->nullable();
+            $table->string('pickup_lng')->nullable();
+            $table->text('detail_alamat')->nullable();
             $table->timestamps();
         });
     }
 
-    /**
-     * Reverse the migrations.
-     */
     public function down(): void
     {
         Schema::dropIfExists('pelanggans');

@@ -35,6 +35,7 @@ class Pemesanan extends Model
     {
         parent::boot();
 
+        // 1. Logika Membuat Kode Pesanan Otomatis (Tetap Seperti Milikmu)
         static::creating(function ($model) {
             if (empty($model->kode_pesanan)) {
                 $latestOrder = static::orderBy('kode_pesanan', 'desc')->first();
@@ -44,6 +45,21 @@ class Pemesanan extends Model
                 }
                 $model->kode_pesanan = 'LDR-' . str_pad($nextNumber, 5, '0', STR_PAD_LEFT);
             }
+        });
+
+        // 2. Logika Update/Simpan ke Tabel Pelanggan Otomatis
+        static::saved(function ($model) {
+            // Kita gunakan updateOrCreate agar jika nomor WA sudah ada, datanya diupdate.
+            // Jika belum ada, maka akan dibuatkan baris baru.
+            \App\Models\Pelanggan::updateOrCreate(
+                ['nomor_whatsapp' => $model->nomor_whatsapp], // Kunci pencarian
+                [
+                    'nama' => $model->nama_pelanggan,
+                    'pickup_lat' => $model->pickup_lat,
+                    'pickup_lng' => $model->pickup_lng,
+                    'detail_alamat' => $model->detail_alamat,
+                ]
+            );
         });
     }
 }

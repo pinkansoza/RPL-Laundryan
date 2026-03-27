@@ -77,6 +77,38 @@ class PemesananForm
                     ->dehydrated(false)
                     ->placeholder('Otomatis LDR-XXXXX')
                     ->maxLength(255),
+                    
+                // --- INI FITUR MAGIC AUTO-FILL NYA ---
+                \Filament\Forms\Components\Select::make('cari_pelanggan')
+                    ->label('🔍 Cari Pelanggan Lama (Opsional)')
+                    ->options(\App\Models\Pelanggan::pluck('nama', 'id'))
+                    ->searchable()
+                    ->live()
+                    ->dehydrated(false) // Mencegah error database karena ini bukan kolom asli pemesanan
+                    ->columnSpanFull()
+                    ->afterStateUpdated(function ($state, \Filament\Schemas\Components\Utilities\Set $set) {
+                        if ($state) {
+                            $pelanggan = \App\Models\Pelanggan::find($state);
+                            if ($pelanggan) {
+                                // Auto-fill data identitas
+                                $set('nama_pelanggan', $pelanggan->nama);
+                                $set('nomor_whatsapp', $pelanggan->nomor_whatsapp);
+                                
+                                // Auto-fill data lokasi
+                                $set('detail_alamat', $pelanggan->detail_alamat);
+                                if ($pelanggan->pickup_lat && $pelanggan->pickup_lng) {
+                                    $set('pickup_lat', $pelanggan->pickup_lat);
+                                    $set('pickup_lng', $pelanggan->pickup_lng);
+                                    $set('titik_pickup', [
+                                        'lat' => $pelanggan->pickup_lat,
+                                        'lng' => $pelanggan->pickup_lng,
+                                    ]);
+                                }
+                            }
+                        }
+                    }),
+                // -------------------------------------
+
                 TextInput::make('nama_pelanggan')->required(),
                 TextInput::make('nomor_whatsapp')->required(),
                 
@@ -138,7 +170,6 @@ class PemesananForm
                     ])
                     ->required(),
 
-                // --- BAGIAN INI YANG DIROMBAK MENJADI 2 ---
                 \Filament\Forms\Components\Select::make('metode_pengiriman')
                     ->label('Kirim (Pakaian Kotor)')
                     ->options([
@@ -156,7 +187,6 @@ class PemesananForm
                     ])
                     ->live()
                     ->required(),
-                // ------------------------------------------
 
                 \Filament\Forms\Components\Select::make('jam_pickup')
                     ->options(function () {
@@ -168,7 +198,6 @@ class PemesananForm
                         return [];
                     })
                     ->visible(function (\Filament\Schemas\Components\Utilities\Get $get) {
-                        // LOGIKA CERDAS: Cek kedua field!
                         $kirim = $get('metode_pengiriman') ?? '';
                         $ambil = $get('metode_pengambilan') ?? '';
                         return str_contains($kirim, 'Pickup') || str_contains($ambil, 'Diantar');
