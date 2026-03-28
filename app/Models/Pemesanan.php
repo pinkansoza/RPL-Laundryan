@@ -35,7 +35,7 @@ class Pemesanan extends Model
     {
         parent::boot();
 
-        // 1. Logika Membuat Kode Pesanan Otomatis (Tetap Seperti Milikmu)
+        // 1. Logika Membuat Kode Pesanan Otomatis
         static::creating(function ($model) {
             if (empty($model->kode_pesanan)) {
                 $latestOrder = static::orderBy('kode_pesanan', 'desc')->first();
@@ -47,12 +47,10 @@ class Pemesanan extends Model
             }
         });
 
-        // 2. Logika Update/Simpan ke Tabel Pelanggan Otomatis
+        // 2. Sinkronisasi ke Tabel Pelanggan
         static::saved(function ($model) {
-            // Kita gunakan updateOrCreate agar jika nomor WA sudah ada, datanya diupdate.
-            // Jika belum ada, maka akan dibuatkan baris baru.
             \App\Models\Pelanggan::updateOrCreate(
-                ['nomor_whatsapp' => $model->nomor_whatsapp], // Kunci pencarian
+                ['nomor_whatsapp' => $model->nomor_whatsapp],
                 [
                     'nama' => $model->nama_pelanggan,
                     'pickup_lat' => $model->pickup_lat,
@@ -61,5 +59,36 @@ class Pemesanan extends Model
                 ]
             );
         });
+
+        // 3. Otomatis Membuat Transaksi (Invoice) saat Pesanan Baru Dibuat
+        static::created(function ($model) {
+            $model->transaksi()->create([
+                'kode_transaksi' => 'INV-' . $model->kode_pesanan, 
+                'total_biaya' => $model->total_estimasi_harga,
+                'total_akhir' => $model->total_estimasi_harga,
+                'status_pembayaran' => 'Belum Lunas',
+                'metode_pembayaran' => $model->metode_pembayaran,
+            ]);
+        });
+
+        // 4. BARU: Otomatis Lunas saat Status Diubah jadi 'Diambil'
+        static::updated(function ($model) {
+            // Cek apakah kolom 'status' berubah DAN berubahnya ke 'Diambil'
+            if ($model->isDirty('status') && $model->status === 'Diambil') {
+                // Cari transaksi yang punya pemesanan_id ini, lalu update statusnya
+                if ($model->transaksi) {
+                    $model->transaksi->update([
+                        'status_pembayaran' => 'Lunas',
+                        // Tanggal bayar & bukti dikosongkan sesuai request Abang
+                    ]);
+                }
+            }
+        });
+    }
+
+    // Hubungan: Satu Pesanan punya Satu Transaksi
+    public function transaksi()
+    {
+        return $this->hasOne(Transaksi::class);
     }
 }
