@@ -8,6 +8,9 @@ use Barryvdh\DomPDF\Facade\Pdf;
 use Filament\Actions\Action;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Actions\EditAction;
+use Filament\Actions\BulkAction;
+use Filament\Forms\Components\Select;
+use Filament\Actions\BulkActionGroup;
 use Illuminate\Support\Facades\Response;
 
 class TransaksisTable
@@ -60,6 +63,38 @@ class TransaksisTable
                     ->color('info')
                     ->url(fn ($record) => route('cetak.nota', $record))
                     ->openUrlInNewTab(),
+            ])
+            ->bulkActions([
+                BulkActionGroup::make([
+                    BulkAction::make('ubahMetodePembayaran')
+                        ->label('Ubah Metode Pembayaran')
+                        ->icon('heroicon-o-credit-card')
+                        ->form([
+                            Select::make('metode_pembayaran')
+                                ->label('Pilih Metode')
+                                ->options([
+                                    'Cash' => 'Cash',
+                                    'QRIS' => 'QRIS',
+                                ])
+                                ->required(),
+                        ])
+                        ->action(function (\Illuminate\Database\Eloquent\Collection $records, array $data): void {
+                            foreach ($records as $record) {
+                                // Update tabel transaksis
+                                $record->update([
+                                    'metode_pembayaran' => $data['metode_pembayaran'],
+                                ]);
+                                
+                                // Jika ingin sinkronisasi ke tabel pemesanans (opsional, karena relasinya ada)
+                                if ($record->pemesanan) {
+                                    $record->pemesanan->update([
+                                        'metode_pembayaran' => $data['metode_pembayaran'],
+                                    ]);
+                                }
+                            }
+                        })
+                        ->deselectRecordsAfterCompletion(),
+                ]),
             ]);
     }
 }

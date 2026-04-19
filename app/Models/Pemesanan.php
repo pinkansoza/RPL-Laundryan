@@ -17,6 +17,7 @@ class Pemesanan extends Model
         'nomor_whatsapp',
         'paket',
         'jenis_layanan',
+        'durasi_layanan',
         'berat',
         'jumlah_item',
         'total_estimasi_harga',

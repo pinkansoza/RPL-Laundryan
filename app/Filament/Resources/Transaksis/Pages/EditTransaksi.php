@@ -3,6 +3,7 @@
 namespace App\Filament\Resources\Transaksis\Pages;
 
 use App\Filament\Resources\Transaksis\TransaksiResource;
+use Filament\Actions\Action;
 use Filament\Actions\DeleteAction;
 use Filament\Resources\Pages\EditRecord;
 
@@ -13,6 +14,12 @@ class EditTransaksi extends EditRecord
     protected function getHeaderActions(): array
     {
         return [
+            Action::make('print')
+                ->label('Cetak Nota')
+                ->icon('heroicon-m-printer')
+                ->color('info')
+                ->url(fn () => route('cetak.nota', $this->record))
+                ->openUrlInNewTab(),
             DeleteAction::make(),
         ];
     }
