@@ -13,10 +13,9 @@ class PemesananForm
         $paket = $get('paket');
         $jenisLayanan = $get('jenis_layanan');
         $berat = (float) $get('berat');
-        $jumlah = (float) $get('jumlah_item');
 
-        if (!$paket || !$jenisLayanan) {
-            $set('total_estimasi_harga', 0);
+        // Hanya auto-hitung untuk Laundry Kiloan
+        if ($paket !== 'Laundry Kiloan' || !$jenisLayanan) {
             return;
         }
 
@@ -27,7 +26,6 @@ class PemesananForm
         }
 
         $price = 0;
-        $isKiloan = false;
         foreach ($harga->konten as $kategori) {
             if (!isset($kategori['items']) || !is_array($kategori['items'])) continue;
             foreach ($kategori['items'] as $item) {
@@ -35,37 +33,19 @@ class PemesananForm
                     $label = $item['harga_label'] ?? '';
                     $cleanPrice = preg_replace('/[^0-9]/', '', $label);
                     $price = (float) $cleanPrice;
-                    $isKiloan = (stripos($kategori['nama_kategori'] ?? '', 'kiloan') !== false || stripos($label, '/kg') !== false);
                     break 2;
                 }
             }
         }
 
-        $total = $isKiloan ? ($price * $berat) : ($price * ($jumlah > 0 ? $jumlah : 1));
+        $total = $price * $berat;
         $set('total_estimasi_harga', $total);
     }
 
     public static function isKiloan(\Filament\Schemas\Components\Utilities\Get $get): bool
     {
-        $jenisLayanan = $get('jenis_layanan');
-        if (!$jenisLayanan) return true;
-
         $paket = $get('paket');
-        if (!$paket) $paket = 'REGULER'; 
-
-        $harga = \App\Models\Harga::where('nama_paket', $paket)->first() ?? \App\Models\Harga::first();
-        if (!$harga || !is_array($harga->konten)) return true;
-
-        foreach ($harga->konten as $kategori) {
-            if (!isset($kategori['items']) || !is_array($kategori['items'])) continue;
-            foreach ($kategori['items'] as $item) {
-                if (($item['nama_item'] ?? '') === $jenisLayanan) {
-                    $label = $item['harga_label'] ?? '';
-                    return (stripos($kategori['nama_kategori'] ?? '', 'kiloan') !== false || stripos($label, '/kg') !== false);
-                }
-            }
-        }
-        return true;
+        return $paket === 'Laundry Kiloan';
     }
 
     public static function configure(Schema $schema): Schema
@@ -73,9 +53,10 @@ class PemesananForm
         return $schema
             ->components([
                 TextInput::make('kode_pesanan')
+                    ->label('Invoice')
                     ->disabled()
                     ->dehydrated(false)
-                    ->placeholder('Otomatis LDR-XXXXX')
+                    ->placeholder('Otomatis (contoh: 0407.19042026.0001)')
                     ->maxLength(255),
                     
                 // --- INI FITUR MAGIC AUTO-FILL NYA ---
@@ -93,17 +74,6 @@ class PemesananForm
                                 // Auto-fill data identitas
                                 $set('nama_pelanggan', $pelanggan->nama);
                                 $set('nomor_whatsapp', $pelanggan->nomor_whatsapp);
-                                
-                                // Auto-fill data lokasi
-                                $set('detail_alamat', $pelanggan->detail_alamat);
-                                if ($pelanggan->pickup_lat && $pelanggan->pickup_lng) {
-                                    $set('pickup_lat', $pelanggan->pickup_lat);
-                                    $set('pickup_lng', $pelanggan->pickup_lng);
-                                    $set('titik_pickup', [
-                                        'lat' => $pelanggan->pickup_lat,
-                                        'lng' => $pelanggan->pickup_lng,
-                                    ]);
-                                }
                             }
                         }
                     }),
@@ -115,26 +85,33 @@ class PemesananForm
                 \Filament\Forms\Components\Select::make('paket')
                     ->options(\App\Models\Harga::pluck('nama_paket', 'nama_paket'))
                     ->live()
-                    ->afterStateUpdated(fn (\Filament\Schemas\Components\Utilities\Set $set, \Filament\Schemas\Components\Utilities\Get $get) => self::updateEstimasiHarga($set, $get))
+                    ->afterStateUpdated(function (\Filament\Schemas\Components\Utilities\Set $set, \Filament\Schemas\Components\Utilities\Get $get) {
+                        $set('jenis_layanan', null);
+                        $set('total_estimasi_harga', 0);
+                        self::updateEstimasiHarga($set, $get);
+                    })
                     ->required(),
                     
                 \Filament\Forms\Components\Select::make('jenis_layanan')
-                    ->options(function () {
+                    ->options(function (\Filament\Schemas\Components\Utilities\Get $get) {
+                        $paket = $get('paket');
+                        if (!$paket) return [];
+
+                        $harga = \App\Models\Harga::where('nama_paket', $paket)->first();
+                        if (!$harga || !is_array($harga->konten)) return [];
+
                         $options = [];
-                        $harga = \App\Models\Harga::first();
-                        if ($harga && is_array($harga->konten)) {
-                            foreach ($harga->konten as $kategori) {
-                                $kategoriOptions = [];
-                                if (isset($kategori['items']) && is_array($kategori['items'])) {
-                                    foreach ($kategori['items'] as $item) {
-                                        if (isset($item['nama_item'])) {
-                                            $kategoriOptions[$item['nama_item']] = $item['nama_item'];
-                                        }
+                        foreach ($harga->konten as $kategori) {
+                            $kategoriOptions = [];
+                            if (isset($kategori['items']) && is_array($kategori['items'])) {
+                                foreach ($kategori['items'] as $item) {
+                                    if (isset($item['nama_item'])) {
+                                        $kategoriOptions[$item['nama_item']] = $item['nama_item'];
                                     }
                                 }
-                                if (isset($kategori['nama_kategori']) && !empty($kategoriOptions)) {
-                                    $options[$kategori['nama_kategori']] = $kategoriOptions;
-                                }
+                            }
+                            if (isset($kategori['nama_kategori']) && !empty($kategoriOptions)) {
+                                $options[$kategori['nama_kategori']] = $kategoriOptions;
                             }
                         }
                         return $options;
@@ -146,6 +123,7 @@ class PemesananForm
                     
                 TextInput::make('berat')
                     ->numeric()
+                    ->suffix('Kg')
                     ->visible(fn (\Filament\Schemas\Components\Utilities\Get $get) => self::isKiloan($get))
                     ->live(onBlur: true)
                     ->afterStateUpdated(fn (\Filament\Schemas\Components\Utilities\Set $set, \Filament\Schemas\Components\Utilities\Get $get) => self::updateEstimasiHarga($set, $get))
@@ -154,14 +132,20 @@ class PemesananForm
                 TextInput::make('jumlah_item')
                     ->numeric()
                     ->integer()
+                    ->suffix('pcs')
                     ->visible(fn (\Filament\Schemas\Components\Utilities\Get $get) => !self::isKiloan($get))
                     ->live(onBlur: true)
-                    ->afterStateUpdated(fn (\Filament\Schemas\Components\Utilities\Set $set, \Filament\Schemas\Components\Utilities\Get $get) => self::updateEstimasiHarga($set, $get))
                     ->default(null),
                     
                 TextInput::make('total_estimasi_harga')
                     ->required()
-                    ->numeric(),
+                    ->numeric()
+                    ->prefix('Rp')
+                    ->helperText(fn (\Filament\Schemas\Components\Utilities\Get $get) => 
+                        self::isKiloan($get) 
+                            ? 'Otomatis dihitung dari jenis layanan × berat' 
+                            : 'Input manual karena harga satuan bervariasi'
+                    ),
                     
                 \Filament\Forms\Components\Select::make('metode_pembayaran')
                     ->options([
@@ -170,79 +154,16 @@ class PemesananForm
                     ])
                     ->required(),
 
-                \Filament\Forms\Components\Select::make('metode_pengiriman')
-                    ->label('Kirim (Pakaian Kotor)')
-                    ->options([
-                        'Antar Sendiri' => 'Pelanggan Antar Sendiri',
-                        'Pickup' => 'Kurir Menjemput (Pickup)',
-                    ])
-                    ->live()
-                    ->required(),
-
-                \Filament\Forms\Components\Select::make('metode_pengambilan')
-                    ->label('Ambil (Pakaian Bersih)')
-                    ->options([
-                        'Ambil Sendiri' => 'Pelanggan Ambil Sendiri',
-                        'Diantar Laundry' => 'Kurir Mengantar',
-                    ])
-                    ->live()
-                    ->required(),
-
-                \Filament\Forms\Components\Select::make('jam_pickup')
-                    ->options(function () {
-                        $kontak = \App\Models\Kontak::first();
-                        $jams = $kontak ? $kontak->jam_pickup : [];
-                        if (is_array($jams) && count($jams) > 0) {
-                            return array_combine($jams, $jams);
-                        }
-                        return [];
-                    })
-                    ->visible(function (\Filament\Schemas\Components\Utilities\Get $get) {
-                        $kirim = $get('metode_pengiriman') ?? '';
-                        $ambil = $get('metode_pengambilan') ?? '';
-                        return str_contains($kirim, 'Pickup') || str_contains($ambil, 'Diantar');
-                    })
-                    ->default(null),
-
-                \Dotswan\MapPicker\Fields\Map::make('titik_pickup')
-                    ->label('Titik Pickup')
+                \Filament\Forms\Components\FileUpload::make('foto')
+                    ->label('Foto Kondisi Awal')
+                    ->image()
+                    ->multiple()
+                    ->maxFiles(5)
+                    ->directory('foto-pemesanan')
                     ->columnSpanFull()
-                    ->defaultLocation(latitude: -6.200000, longitude: 106.816666)
-                    ->afterStateHydrated(function ($state, $record, callable $set) {
-                        if ($record && $record->pickup_lat && $record->pickup_lng) {
-                            $set('titik_pickup', ['lat' => $record->pickup_lat, 'lng' => $record->pickup_lng]);
-                        }
-                    })
-                    ->afterStateUpdated(function ($state, callable $set) {
-                        if (is_array($state)) {
-                            $set('pickup_lat', $state['lat'] ?? null);
-                            $set('pickup_lng', $state['lng'] ?? null);
-                        }
-                    })
-                    ->live(onBlur: true)
-                    ->showMarker(true)
-                    ->draggable(true)
-                    ->clickable(true)
-                    ->showFullscreenControl(true)
-                    ->showZoomControl(true)
-                    ->showMyLocationButton(true)
-                    ->visible(function (\Filament\Schemas\Components\Utilities\Get $get) {
-                        $kirim = $get('metode_pengiriman') ?? '';
-                        $ambil = $get('metode_pengambilan') ?? '';
-                        return str_contains($kirim, 'Pickup') || str_contains($ambil, 'Diantar');
-                    }),
-
-                \Filament\Forms\Components\Hidden::make('pickup_lat'),
-                \Filament\Forms\Components\Hidden::make('pickup_lng'),
-
-                Textarea::make('detail_alamat')
-                    ->visible(function (\Filament\Schemas\Components\Utilities\Get $get) {
-                        $kirim = $get('metode_pengiriman') ?? '';
-                        $ambil = $get('metode_pengambilan') ?? '';
-                        return str_contains($kirim, 'Pickup') || str_contains($ambil, 'Diantar');
-                    })
-                    ->default(null)
-                    ->columnSpanFull(),
+                    ->reorderable()
+                    ->imageEditor()
+                    ->helperText('Upload foto kondisi awal laundry pelanggan (maks 5 foto)'),
 
                 Textarea::make('catatan')
                     ->default(null)

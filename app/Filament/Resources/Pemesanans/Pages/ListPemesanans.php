@@ -25,14 +25,22 @@ class ListPemesanans extends ListRecords
         return [
             'Semua' => Tab::make('Semua Pesanan')
                 ->badge(Pemesanan::count()),
-            'Pickup' => Tab::make('Kurir Pickup')
-                ->modifyQueryUsing(fn (Builder $query) => $query->where('metode_pengiriman', 'Pickup'))
-                ->badge(Pemesanan::where('metode_pengiriman', 'Pickup')->count())
-                ->badgeColor('primary'),
-            'Antar' => Tab::make('Antar Sendiri')
-                ->modifyQueryUsing(fn (Builder $query) => $query->where('metode_pengiriman', 'Antar Sendiri'))
-                ->badge(Pemesanan::where('metode_pengiriman', 'Antar Sendiri')->count())
+            'Diterima' => Tab::make('Diterima')
+                ->modifyQueryUsing(fn (Builder $query) => $query->where('status', 'Diterima'))
+                ->badge(Pemesanan::where('status', 'Diterima')->count())
+                ->badgeColor('info'),
+            'Dicuci' => Tab::make('Dicuci')
+                ->modifyQueryUsing(fn (Builder $query) => $query->where('status', 'Dicuci'))
+                ->badge(Pemesanan::where('status', 'Dicuci')->count())
+                ->badgeColor('warning'),
+            'Selesai' => Tab::make('Selesai')
+                ->modifyQueryUsing(fn (Builder $query) => $query->where('status', 'Selesai'))
+                ->badge(Pemesanan::where('status', 'Selesai')->count())
                 ->badgeColor('success'),
+            'Diambil' => Tab::make('Diambil')
+                ->modifyQueryUsing(fn (Builder $query) => $query->where('status', 'Diambil'))
+                ->badge(Pemesanan::where('status', 'Diambil')->count())
+                ->badgeColor('gray'),
         ];
     }
 }

@@ -28,7 +28,12 @@ class Pemesanan extends Model
         'pickup_lng',
         'detail_alamat',
         'catatan',
+        'foto',
         'status',
+    ];
+
+    protected $casts = [
+        'foto' => 'array',
     ];
 
     protected static function boot()
@@ -38,12 +43,35 @@ class Pemesanan extends Model
         // 1. Logika Membuat Kode Pesanan Otomatis
         static::creating(function ($model) {
             if (empty($model->kode_pesanan)) {
-                $latestOrder = static::orderBy('kode_pesanan', 'desc')->first();
-                $nextNumber = 1;
-                if ($latestOrder && preg_match('/LDR-(\d+)/', $latestOrder->kode_pesanan, $matches)) {
-                    $nextNumber = intval($matches[1]) + 1;
+                // Tentukan kode prefix layanan
+                $kodeLayanan = ($model->paket === 'Laundry Kiloan') ? '0407' : '0704';
+                $tanggal = now()->format('dmY'); // Format: 19042026
+                $prefix = "{$kodeLayanan}.{$tanggal}.";
+
+                // Cari nomor urut terbesar dari tabel pemesanans dan transaksis (karena transaksi tidak dihapus saat pesanan dihapus)
+                $latestOrder = static::where('kode_pesanan', 'like', $prefix . '%')->orderBy('kode_pesanan', 'desc')->first();
+                $latestTransaksi = \App\Models\Transaksi::where('kode_transaksi', 'like', $prefix . '%')->orderBy('kode_transaksi', 'desc')->first();
+
+                $maxNumber = 0;
+
+                if ($latestOrder) {
+                    $parts = explode('.', $latestOrder->kode_pesanan);
+                    if (count($parts) === 3) {
+                        $num = intval($parts[2]);
+                        if ($num > $maxNumber) $maxNumber = $num;
+                    }
                 }
-                $model->kode_pesanan = 'LDR-' . str_pad($nextNumber, 5, '0', STR_PAD_LEFT);
+
+                if ($latestTransaksi) {
+                    $parts = explode('.', $latestTransaksi->kode_transaksi);
+                    if (count($parts) === 3) {
+                        $num = intval($parts[2]);
+                        if ($num > $maxNumber) $maxNumber = $num;
+                    }
+                }
+
+                $nextNumber = $maxNumber + 1;
+                $model->kode_pesanan = $prefix . str_pad($nextNumber, 4, '0', STR_PAD_LEFT);
             }
         });
 
@@ -63,7 +91,7 @@ class Pemesanan extends Model
         // 3. Otomatis Membuat Transaksi (Invoice) saat Pesanan Baru Dibuat
         static::created(function ($model) {
             $model->transaksi()->create([
-                'kode_transaksi' => 'INV-' . $model->kode_pesanan, 
+                'kode_transaksi' => $model->kode_pesanan, 
                 'total_biaya' => $model->total_estimasi_harga,
                 'total_akhir' => $model->total_estimasi_harga,
                 'status_pembayaran' => 'Belum Lunas',

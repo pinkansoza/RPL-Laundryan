@@ -32,7 +32,7 @@
     
     <div class="container mx-auto relative z-10">
         <div class="text-center mb-12 px-5">
-            <h2 class="text-xl md:text-4xl font-extrabold text-gray-900 mb-3 tracking-tight">Apa Kata Pelanggan?</h2>
+            <h2 class="text-xl md:text-4xl font-bold text-gray-900 mb-3 tracking-tight">Apa Kata Pelanggan?</h2>
             <p class="text-xs md:text-base text-gray-500">Kepuasan kamu adalah prioritas kami</p>
         </div>
 

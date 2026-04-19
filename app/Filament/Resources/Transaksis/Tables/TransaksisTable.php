@@ -26,6 +26,7 @@ class TransaksisTable
 
                 TextColumn::make('pemesanan.nama_pelanggan')
                     ->label('Pelanggan')
+                    ->default('Pesanan Dihapus')
                     ->searchable(),
 
                 TextColumn::make('total_akhir')
@@ -37,8 +38,8 @@ class TransaksisTable
                     ->badge()
                     ->color(fn (string $state): string => match ($state) {
                         'Lunas' => 'success',
-                        'DP' => 'warning',
                         'Belum Lunas' => 'danger',
+                        default => 'gray',
                     }),
 
                 TextColumn::make('metode_pembayaran')
@@ -52,26 +53,13 @@ class TransaksisTable
             ->actions([
                 EditAction::make(),
 
-                // HANYA TOMBOL CETAK STRUK THERMAL
+                // CETAK STRUK THERMAL via Browser Print
                 Action::make('print')
                     ->label('Cetak Nota')
                     ->icon('heroicon-m-printer')
                     ->color('info')
-                    ->action(function ($record) {
-                        $kontak = Kontak::first();
-                        
-                        $pdf = Pdf::loadView('transaksi.nota', [
-                            'transaksi' => $record,
-                            'kontak' => $kontak,
-                        ]);
-
-                        // Setting Kertas Thermal 58mm
-                        $pdf->setPaper([0, 0, 164.41, 500], 'portrait'); 
-
-                        return Response::streamDownload(function () use ($pdf) {
-                            echo $pdf->stream();
-                        }, "Struk-{$record->kode_transaksi}.pdf");
-                    }),
+                    ->url(fn ($record) => route('cetak.nota', $record))
+                    ->openUrlInNewTab(),
             ]);
     }
 }

@@ -12,7 +12,7 @@ class Kontak extends Model
     protected $table = 'kontaks';
 
     protected $fillable = [
-        'alamat',
+        'tiktok',
         'whatsapp',
         'instagram',
         'jam_operasional',

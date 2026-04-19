@@ -20,6 +20,7 @@ class PemesanansTable
         return $table
             ->columns([
                 TextColumn::make('kode_pesanan')
+                    ->label('Invoice')
                     ->searchable()
                     ->sortable()
                     ->badge()
@@ -54,45 +55,7 @@ class PemesanansTable
                     ->searchable()
                     ->toggleable(isToggledHiddenByDefault: true),
                 
-                // --- DIPISAH JADI 2 KOLOM (KIRIM & AMBIL) ---
-                TextColumn::make('metode_pengiriman')
-                    ->label('Kirim (Kotor)')
-                    ->searchable()
-                    ->badge()
-                    ->color(fn (string $state): string => match ($state) {
-                        'Antar Sendiri' => 'gray',
-                        'Pickup' => 'warning', // Match dengan form frontend
-                        'Pickup Laundry' => 'warning',
-                        default => 'primary',
-                    })
-                    ->toggleable(),
-                TextColumn::make('metode_pengambilan')
-                    ->label('Ambil (Bersih)')
-                    ->searchable()
-                    ->badge()
-                    ->color(fn (string $state): string => match ($state) {
-                        'Ambil Sendiri' => 'gray',
-                        'Diantar Laundry' => 'success',
-                        default => 'danger', // Merah kalau masih kosong/belum diatur admin
-                    })
-                    ->toggleable(),
-                // ---------------------------------------------
 
-                TextColumn::make('jam_pickup')
-                    ->searchable()
-                    ->toggleable(isToggledHiddenByDefault: true),
-                TextColumn::make('titik_pickup')
-                    ->label('Titik Pickup')
-                    ->getStateUsing(function (Pemesanan $record) {
-                        if ($record->pickup_lat && $record->pickup_lng) {
-                            return "{$record->pickup_lat}, {$record->pickup_lng}";
-                        }
-                        return '-';
-                    })
-                    ->url(fn (Pemesanan $record) => $record->pickup_lat && $record->pickup_lng ? "https://www.google.com/maps/search/?api=1&query={$record->pickup_lat},{$record->pickup_lng}" : null)
-                    ->openUrlInNewTab()
-                    ->icon('heroicon-m-map-pin')
-                    ->toggleable(isToggledHiddenByDefault: true),
                 TextColumn::make('status')
                     ->searchable()
                     ->badge()
@@ -151,20 +114,7 @@ class PemesanansTable
                     ->label('Paket')
                     ->options(fn () => Pemesanan::query()->distinct()->pluck('paket', 'paket')->toArray()),
 
-                // --- FILTER DIPISAH JADI 2 ---
-                SelectFilter::make('metode_pengiriman')
-                    ->label('Kirim (Kotor)')
-                    ->options([
-                        'Antar Sendiri' => 'Antar Sendiri',
-                        'Pickup' => 'Pickup oleh Kurir',
-                    ]),
-                SelectFilter::make('metode_pengambilan')
-                    ->label('Ambil (Bersih)')
-                    ->options([
-                        'Ambil Sendiri' => 'Ambil Sendiri',
-                        'Diantar Laundry' => 'Diantar Laundry',
-                    ]),
-                // -----------------------------
+
 
                 SelectFilter::make('status')
                     ->label('Status')
@@ -178,9 +128,61 @@ class PemesanansTable
             ])
             ->recordActions([
                 EditAction::make(),
+                \Filament\Actions\Action::make('cetak_nota')
+                    ->label('Cetak')
+                    ->icon('heroicon-m-printer')
+                    ->color('info')
+                    ->url(fn ($record) => $record->transaksi ? route('cetak.nota', $record->transaksi) : null)
+                    ->openUrlInNewTab()
+                    ->visible(fn ($record) => $record->transaksi !== null),
             ])
             ->toolbarActions([
                 BulkActionGroup::make([
+                    \Filament\Actions\BulkAction::make('ubah_ke_dicuci')
+                        ->label('Tandai Dicuci')
+                        ->icon('heroicon-o-beaker')
+                        ->color('warning')
+                        ->requiresConfirmation()
+                        ->modalHeading('Ubah Status ke Dicuci')
+                        ->modalDescription('Apakah Anda yakin ingin mengubah status pesanan yang dipilih menjadi "Dicuci"?')
+                        ->action(function (\Illuminate\Database\Eloquent\Collection $records) {
+                            $records->each->update(['status' => 'Dicuci']);
+                            \Filament\Notifications\Notification::make()
+                                ->title($records->count() . ' pesanan diubah ke Dicuci')
+                                ->success()
+                                ->send();
+                        }),
+
+                    \Filament\Actions\BulkAction::make('ubah_ke_selesai')
+                        ->label('Tandai Selesai')
+                        ->icon('heroicon-o-check-circle')
+                        ->color('success')
+                        ->requiresConfirmation()
+                        ->modalHeading('Ubah Status ke Selesai')
+                        ->modalDescription('Apakah Anda yakin ingin mengubah status pesanan yang dipilih menjadi "Selesai"?')
+                        ->action(function (\Illuminate\Database\Eloquent\Collection $records) {
+                            $records->each->update(['status' => 'Selesai']);
+                            \Filament\Notifications\Notification::make()
+                                ->title($records->count() . ' pesanan diubah ke Selesai')
+                                ->success()
+                                ->send();
+                        }),
+
+                    \Filament\Actions\BulkAction::make('ubah_ke_diambil')
+                        ->label('Tandai Diambil')
+                        ->icon('heroicon-o-hand-raised')
+                        ->color('info')
+                        ->requiresConfirmation()
+                        ->modalHeading('Ubah Status ke Diambil')
+                        ->modalDescription('Apakah Anda yakin ingin mengubah status pesanan yang dipilih menjadi "Diambil"? Transaksi akan otomatis menjadi Lunas.')
+                        ->action(function (\Illuminate\Database\Eloquent\Collection $records) {
+                            $records->each->update(['status' => 'Diambil']);
+                            \Filament\Notifications\Notification::make()
+                                ->title($records->count() . ' pesanan diubah ke Diambil & Lunas')
+                                ->success()
+                                ->send();
+                        }),
+
                     DeleteBulkAction::make(),
                 ]),
             ]);

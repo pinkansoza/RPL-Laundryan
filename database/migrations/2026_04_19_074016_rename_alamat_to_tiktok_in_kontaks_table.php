@@ -12,7 +12,7 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('kontaks', function (Blueprint $table) {
-            $table->json('jam_pickup')->nullable()->after('url_gmaps');
+            $table->renameColumn('alamat', 'tiktok');
         });
     }
 
@@ -22,7 +22,7 @@ return new class extends Migration
     public function down(): void
     {
         Schema::table('kontaks', function (Blueprint $table) {
-            $table->dropColumn('jam_pickup');
+            $table->renameColumn('tiktok', 'alamat');
         });
     }
 };

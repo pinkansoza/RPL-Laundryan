@@ -12,9 +12,11 @@ class KontaksTable
     {
         return $table
             ->columns([
-                TextColumn::make('alamat')
-                    ->label('Alamat')
-                    ->limit(30) 
+                TextColumn::make('tiktok')
+                    ->label('TikTok')
+                    ->formatStateUsing(fn (?string $state): string => $state ? "@{$state}" : '-')
+                    ->badge()
+                    ->color('danger')
                     ->searchable(),
 
                 TextColumn::make('whatsapp')

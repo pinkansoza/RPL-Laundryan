@@ -10,9 +10,6 @@
             <a href="#tentang" class="px-4 py-2 rounded-lg hover:bg-[#559dd4] hover:text-white transition-all duration-300">Layanan</a>
             <a href="#harga" class="px-4 py-2 rounded-lg hover:bg-[#559dd4] hover:text-white transition-all duration-300">Harga</a>
             <a href="#alamat" class="px-4 py-2 rounded-lg hover:bg-[#559dd4] hover:text-white transition-all duration-300">Kontak</a>
-            <button onclick="toggleModal()" class="bg-[#559dd4] text-white px-6 py-2 rounded-full font-bold hover:bg-cyan-600 shadow-md transition transform hover:scale-105 active:scale-95">
-                Laundry Sekarang
-            </button>
         </div>
 
         <div class="lg:hidden flex items-center">

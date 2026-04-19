@@ -11,7 +11,7 @@
 
         <div class="md:order-first space-y-5 md:space-y-6">
             <div>
-                <h2 class="text-2xl md:text-5xl font-extrabold text-gray-800 leading-snug md:leading-tight">
+                <h2 class="text-2xl md:text-5xl font-bold text-gray-800 leading-snug md:leading-tight">
                     {!! $beranda->judul ?? 'Solusi Cerdas untuk <br> <span class="text-[#559dd4]">Pakaian Berkualitas</span>' !!}
                 </h2>
                 
@@ -20,16 +20,11 @@
                 </p>
             </div>
 
-            <div class="block md:hidden max-w-sm mx-auto md:mx-0">
-                <button onclick="toggleModal()" class="w-full bg-[#559dd4] text-white font-bold py-2.5 rounded-lg shadow-md active:scale-95 transition-transform flex items-center justify-center gap-2 text-sm">
-                    Laundry Sekarang
-                </button>
-            </div>
             
             <div class="bg-white p-4 md:p-5 rounded-xl md:rounded-2xl shadow-md md:shadow-lg border border-gray-100 mx-auto md:mx-0 max-w-sm w-full">
                 <label class="block text-[10px] font-black text-gray-400 uppercase tracking-widest mb-2">Cek Status Laundryanmu</label>
                 <form action="{{ route('home') }}#beranda" method="GET" class="flex gap-2">
-                    <input type="text" name="kode" value="{{ request('kode') }}" placeholder="LDR-0000X" 
+                    <input type="text" name="kode" value="{{ request('kode') }}" placeholder="Contoh: 0407.19042026.0001" 
                            class="flex-1 w-full border-gray-200 rounded-lg md:rounded-xl p-2.5 md:p-3 text-sm focus:ring-[#559dd4] bg-gray-50 outline-none border focus:border-[#559dd4]/50">
                     <button type="submit" class="bg-[#89b252] text-white px-5 py-2.5 md:py-3 rounded-lg md:rounded-xl font-bold text-sm hover:bg-green-600 transition shadow-md">
                         Cek

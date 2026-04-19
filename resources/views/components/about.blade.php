@@ -6,7 +6,7 @@
     <div class="container mx-auto relative z-10">
         {{-- Section Header --}}
         <div class="text-center mb-8 md:mb-16">
-            <h2 class="text-xl md:text-4xl font-extrabold text-white mb-3 text-center">Layanan & Promo</h2>
+            <h2 class="text-xl md:text-4xl font-bold text-white mb-3 text-center">Layanan & Promo</h2>
             <p class="text-xs md:text-base text-white">Pilih paket layanan yang sesuai dengan kebutuhan Anda</p>
         </div>
         

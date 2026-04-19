@@ -21,7 +21,6 @@ class TransaksiForm
                 Select::make('status_pembayaran')
                     ->options([
                         'Belum Lunas' => 'Belum Lunas',
-                        'DP' => 'DP (Down Payment)',
                         'Lunas' => 'Lunas',
                     ])
                     ->required()
@@ -31,7 +30,6 @@ class TransaksiForm
                     ->options([
                         'Cash' => 'Cash',
                         'QRIS' => 'QRIS',
-                        'Transfer' => 'Transfer Bank',
                     ])
                     ->native(false),
 
@@ -45,10 +43,6 @@ class TransaksiForm
                     ->image()
                     ->directory('bukti-bayar')
                     ->columnSpanFull(),
-
-                DateTimePicker::make('tgl_bayar')
-                    ->label('Tanggal Pelunasan')
-                    ->default(now()),
             ]);
     }
 }

@@ -12,7 +12,7 @@ class KontakSeeder extends Seeder
         Kontak::updateOrCreate(
             ['id' => 1],
             [
-                'alamat' => 'Gg. Cempaka Sari No.39, Sekaran, Gn. Pati, Semarang',
+                'tiktok' => 'laundry.ak',
                 'whatsapp' => '628816514122',
                 'instagram' => 'laundry.ak',
                 'jam_operasional' => 'Setiap Hari: 07.00 - 21.00 WIB',
