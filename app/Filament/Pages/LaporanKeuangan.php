@@ -29,6 +29,11 @@ class LaporanKeuangan extends Page implements HasForms
 
     protected static ?string $title = 'Laporan Keuangan';
 
+    public static function canAccess(): bool
+    {
+        return auth()->user()->role === 'owner';
+    }
+
     public ?string $dari_tanggal = null;
     public ?string $sampai_tanggal = null;
 

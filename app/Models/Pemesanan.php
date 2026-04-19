@@ -98,19 +98,44 @@ class Pemesanan extends Model
                 'status_pembayaran' => 'Belum Lunas',
                 'metode_pembayaran' => $model->metode_pembayaran,
             ]);
+
+            // Kirim Notifikasi WA (Background Request)
+            $pesan = "Halo Kak *{$model->nama_pelanggan}* 👋\n\nTerima kasih sudah mempercayakan cuciannya di *Laundry AK*!\nNomor Struk: *{$model->kode_pesanan}*\nLayanan: {$model->paket} - {$model->jenis_layanan}\n\nCucian kakak sedang kami proses masuk mesin cuci hari ini. Tunggu info selanjutnya kalau sudah wangi ya!\n\n~ Sistem Otomatis Laundry AK ~";
+            try {
+                \Illuminate\Support\Facades\Http::timeout(3)->post('http://localhost:3000/api/send-message', [
+                    'number' => $model->nomor_whatsapp,
+                    'message' => $pesan
+                ]);
+            } catch (\Exception $e) {}
         });
 
-        // 4. BARU: Otomatis Lunas saat Status Diubah jadi 'Diambil'
+        // 4. Logika Perubahan Status (Diambil jadi Lunas & Selesai Kirim WA)
         static::updated(function ($model) {
-            // Cek apakah kolom 'status' berubah DAN berubahnya ke 'Diambil'
-            if ($model->isDirty('status') && $model->status === 'Diambil') {
-                // Cari transaksi yang punya pemesanan_id ini, lalu update statusnya
-                if ($model->transaksi) {
-                    $model->transaksi->update([
-                        'status_pembayaran' => 'Lunas',
-                        // Tanggal bayar & bukti dikosongkan sesuai request Abang
-                    ]);
+            // Cek apakah kolom 'status' berubah
+            if ($model->isDirty('status')) {
+
+                if ($model->status === 'Diambil') {
+                    // Update jadi lunas di transaksi
+                    if ($model->transaksi) {
+                        $model->transaksi->update([
+                            'status_pembayaran' => 'Lunas',
+                        ]);
+                    }
                 }
+
+                if ($model->status === 'Selesai') {
+                    // Kirim Notifikasi WA Cucian Kelar
+                    $total = "Rp " . number_format($model->transaksi->total_akhir ?? $model->total_estimasi_harga, 0, ',', '.');
+                    $pesanSelesai = "PING!! 🔔\n\nHalo Kak *{$model->nama_pelanggan}*, cucian baju kakak dengan Struk *{$model->kode_pesanan}* saat ini sudah SELESAI, terlipat rapi, dan pastinya super wangi!\n\nSilakan datang ke outlet untuk pengambilan ya kak.\nTotal Tagihan: *$total*\n\nTerima kasih banyak! 🙏";
+
+                    try {
+                        \Illuminate\Support\Facades\Http::timeout(3)->post('http://localhost:3000/api/send-message', [
+                            'number' => $model->nomor_whatsapp,
+                            'message' => $pesanSelesai
+                        ]);
+                    } catch (\Exception $e) {}
+                }
+
             }
         });
     }

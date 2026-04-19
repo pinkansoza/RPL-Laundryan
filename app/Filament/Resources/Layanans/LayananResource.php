@@ -33,6 +33,11 @@ class LayananResource extends Resource
     
     protected static ?int $navigationSort = 2;
 
+    public static function canAccess(): bool
+    {
+        return auth()->user()->role === 'owner';
+    }
+
     public static function form(Schema $schema): Schema
     {
         return LayananForm::configure($schema);

@@ -14,6 +14,11 @@ class PemasukanBulananChart extends ChartWidget
     protected ?string $heading = 'Grafik Arus Kas (Tahun Ini)';
     protected ?string $maxHeight = '300px';
 
+    public static function canView(): bool
+    {
+        return auth()->user()->role === 'owner';
+    }
+
     protected function getData(): array
     {
         $currentYear = Carbon::now()->year;

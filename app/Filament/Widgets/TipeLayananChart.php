@@ -12,6 +12,11 @@ class TipeLayananChart extends ChartWidget
     protected ?string $heading = 'Tipe Layanan Terfavorit (Bulan Ini)';
     protected ?string $maxHeight = '300px';
 
+    public static function canView(): bool
+    {
+        return auth()->user()->role === 'owner';
+    }
+
     protected function getData(): array
     {
         $startOfMonth = Carbon::now()->startOfMonth();
