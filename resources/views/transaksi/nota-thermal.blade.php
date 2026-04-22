@@ -51,8 +51,8 @@
 <body>
     @php
         $pemesanan = $transaksi->pemesanan;
-        $masuk = $pemesanan->created_at;
-        $estSelesai = $masuk->copy();
+        $masuk = $pemesanan ? $pemesanan->created_at : $transaksi->created_at;
+        $estSelesai = $masuk ? $masuk->copy() : now();
         
         // Cek durasi untuk Estimasi Selesai
         $durasiStr = strtolower($pemesanan->durasi_layanan ?? '');
@@ -67,13 +67,13 @@
         }
 
         // Qty Label & Calculation
-        $qtyLabel = $pemesanan->berat ? $pemesanan->berat . ' kg' : ($pemesanan->jumlah_item ? $pemesanan->jumlah_item . ' pcs' : '1 ls');
-        $qtyNilai = $pemesanan->berat ?: ($pemesanan->jumlah_item ?: 1);
+        $qtyLabel = ($pemesanan && $pemesanan->berat) ? $pemesanan->berat . ' kg' : (($pemesanan && $pemesanan->jumlah_item) ? $pemesanan->jumlah_item . ' pcs' : '1 ls');
+        $qtyNilai = ($pemesanan && $pemesanan->berat) ? $pemesanan->berat : (($pemesanan && $pemesanan->jumlah_item) ? $pemesanan->jumlah_item : 1);
         $hargaSatuan = $qtyNilai > 0 ? ($transaksi->total_biaya / $qtyNilai) : $transaksi->total_biaya;
         
         // Helper text layanan
-        $txtLayanan = $pemesanan->jenis_layanan;
-        if ($pemesanan->durasi_layanan) {
+        $txtLayanan = $pemesanan ? $pemesanan->jenis_layanan : 'Layanan Manual';
+        if ($pemesanan && $pemesanan->durasi_layanan) {
             $txtLayanan .= ' (' . $pemesanan->durasi_layanan . ')';
         }
     @endphp
@@ -93,11 +93,11 @@
     {{-- INFO PELANGGAN --}}
     <div class="info-row bold" style="margin-top: 10px;">{{ $transaksi->kode_transaksi }}</div>
     <div class="info-row">Kasir : Admin</div>
-    <div class="info-row">Pelanggan : {{ $pemesanan->nama_pelanggan }}</div>
-    <div class="info-row">No HP : {{ $pemesanan->nomor_whatsapp }}</div>
+    <div class="info-row">Pelanggan : {{ $pemesanan->nama_pelanggan ?? 'Umum' }}</div>
+    <div class="info-row">No HP : {{ $pemesanan->nomor_whatsapp ?? '-' }}</div>
     <div class="info-row">Layanan : {{ $txtLayanan }}</div>
-    <div class="info-row">Masuk : {{ $masuk->format('d/m/Y - H:i') }}</div>
-    <div class="info-row">Est Selesai: {{ $estSelesai->format('d/m/Y - H:i') }}</div>
+    <div class="info-row">Masuk : {{ $masuk ? $masuk->format('d/m/Y - H:i') : '-' }}</div>
+    <div class="info-row">Est Selesai: {{ $estSelesai ? $estSelesai->format('d/m/Y - H:i') : '-' }}</div>
 
     <div class="line"></div>
 
@@ -107,7 +107,7 @@
     <div class="info-row">
         {{ $qtyLabel }} x Rp {{ number_format($hargaSatuan, 0, ',', '.') }} = Rp {{ number_format($transaksi->total_biaya, 0, ',', '.') }}
     </div>
-    <div class="info-row">Catatan : {{ empty($pemesanan->catatan) ? '-' : $pemesanan->catatan }}</div>
+    <div class="info-row">Catatan : {{ empty($pemesanan) || empty($pemesanan->catatan) ? '-' : $pemesanan->catatan }}</div>
     <div class="line"></div>
 
     {{-- PEMBAYARAN --}}

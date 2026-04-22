@@ -118,10 +118,6 @@
                             <span class="font-bold text-gray-900 text-right">{{ $data->nomor_whatsapp }}</span>
                         </div>
                         <div class="flex items-center justify-between pb-2 border-b border-gray-200/50">
-                            <span class="text-gray-500 w-24">Pengiriman</span>
-                            <span class="font-bold text-gray-900 text-right">{{ $data->metode_pengiriman }}</span>
-                        </div>
-                        <div class="flex items-center justify-between pb-2 border-b border-gray-200/50">
                             <span class="text-gray-500 w-24">Pembayaran</span>
                             <span class="font-bold text-gray-900 text-right">{{ strtoupper($data->metode_pembayaran) }}</span>
                         </div>

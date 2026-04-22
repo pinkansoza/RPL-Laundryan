@@ -22,15 +22,13 @@ class PelanggansTable
                     ->label('Nama Pelanggan')
                     ->searchable()
                     ->sortable()
-                    ->weight('bold')
-                    ->toggleable(),
+                    ->weight('bold'),
 
                 TextColumn::make('nomor_whatsapp')
                     ->label('WhatsApp')
                     ->searchable()
                     ->copyable()
-                    ->icon('heroicon-m-phone')
-                    ->toggleable(),
+                    ->icon('heroicon-m-phone'),
 
                 TextColumn::make('detail_alamat')
                     ->label('Alamat')
@@ -64,8 +62,7 @@ class PelanggansTable
                 TextColumn::make('created_at')
                     ->label('Terdaftar Sejak')
                     ->dateTime('d M Y') // Format: 27 Mar 2026
-                    ->sortable()
-                    ->toggleable(),
+                    ->sortable(),
             ])
             ->filters([
                 Filter::make('created_at')

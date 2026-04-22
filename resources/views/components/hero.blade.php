@@ -44,7 +44,7 @@
                     @else
                         <div class="mt-4 p-4 rounded-xl border bg-red-50 border-red-200">
                             <p class="font-bold text-sm text-red-700">Pesanan tidak ditemukan!</p>
-                            <p class="text-[11px] text-red-500 mt-1 leading-tight">Pastikan kode yang kamu masukkan benar (Contoh: LDR-XXXXX).</p>
+                            <p class="text-[11px] text-red-500 mt-1 leading-tight">Pastikan kode yang kamu masukkan benar (Contoh: 0407.19042026.0001).</p>
                         </div>
                     @endif
                 @endif

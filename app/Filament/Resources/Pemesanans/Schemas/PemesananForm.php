@@ -196,13 +196,17 @@ class PemesananForm
                 \Filament\Forms\Components\FileUpload::make('foto')
                     ->label('Foto Kondisi Awal')
                     ->image()
+                    ->optimize('webp')
+                    ->imageResizeMode('cover')
+                    ->imageResizeTargetWidth('1024')
+                    ->imageResizeTargetHeight('1024')
                     ->multiple()
                     ->maxFiles(5)
                     ->directory('foto-pemesanan')
                     ->columnSpanFull()
                     ->reorderable()
                     ->imageEditor()
-                    ->helperText('Upload foto kondisi awal laundry pelanggan (maks 5 foto)'),
+                    ->helperText('Upload foto kondisi awal laundry pelanggan (Otomatis dikompres & dikecilkan s/d ~100kb per foto. Maks 5)'),
 
                 Textarea::make('catatan')
                     ->default(null)

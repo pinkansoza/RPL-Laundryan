@@ -2,7 +2,7 @@
     <div class="container mx-auto">
         
         {{-- Section Header --}}
-        <div class="text-center mb-8 md:mb-16">
+        <div class="text-center mb-5 md:mb-8">
             <h2 class="text-xl md:text-4xl font-bold text-gray-900 mb-3 text-center">List Harga</h2>
             <p class="text-xs md:text-base text-gray-500">Pilih paket layanan yang sesuai dengan kebutuhan Anda</p>
         </div>

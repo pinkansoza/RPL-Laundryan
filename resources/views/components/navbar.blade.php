@@ -1,8 +1,7 @@
 <nav class="bg-white/90 backdrop-blur-md shadow-sm sticky top-0 z-50 p-3">
     <div class="container mx-auto flex justify-between items-center">
         <a href="#" class="text-xl md:text-2xl font-bold text-cyan-600 flex items-center gap-3">
-            <img src="{{ asset('img/1.png') }}" alt="Logo" class="w-10 h-10 md:w-14 md:h-14 object-contain">
-            <img src="{{ asset('img/2.png') }}" alt="Text Logo" class="h-8 md:h-10 w-auto object-contain">
+            <img src="{{ asset('img/logo.png') }}" alt="Text Logo" class="h-8 md:h-10 w-auto object-contain">
         </a>
         
         <div class="hidden lg:flex items-center space-x-4 text-gray-600 font-medium text-sm">

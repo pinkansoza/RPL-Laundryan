@@ -6,6 +6,8 @@ use App\Models\Pemesanan;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
+use Filament\Actions\Action;
+use Filament\Actions\ActionGroup;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Filters\Filter;
@@ -62,7 +64,7 @@ class PemesanansTable
                     ->color(fn (string $state): string => match ($state) {
                         'Diterima' => 'info',
                         'Dicuci' => 'warning',
-                        'Selesai' => 'success',
+                        'Selesai' => 'primary',
                         'Diambil' => 'success',
                         'Dibatalkan' => 'danger',
                         default => 'gray',
@@ -128,13 +130,44 @@ class PemesanansTable
             ])
             ->recordActions([
                 EditAction::make(),
-                \Filament\Actions\Action::make('cetak_nota')
+                Action::make('cetak_nota')
                     ->label('Cetak')
                     ->icon('heroicon-m-printer')
                     ->color('info')
                     ->url(fn ($record) => $record->transaksi ? route('cetak.nota', $record->transaksi) : null)
                     ->openUrlInNewTab()
                     ->visible(fn ($record) => $record->transaksi !== null),
+                ActionGroup::make([
+                    Action::make('wa_diterima')
+                        ->label('WA Diterima')
+                        ->icon('heroicon-m-chat-bubble-left-ellipsis')
+                        ->color('success')
+                        ->url(function ($record) {
+                            $pesan = "Halo Kak *{$record->nama_pelanggan}* 👋\n\nTerima kasih sudah mempercayakan cuciannya di *Laundry AK*!\nNomor Struk: *{$record->kode_pesanan}*\nLayanan: {$record->paket} - {$record->jenis_layanan}\n\nCucian kakak sedang kami proses masuk mesin cuci hari ini. Tunggu info selanjutnya kalau sudah wangi ya!\n\n~ Admin Laundry AK ~";
+                            $encoded = urlencode($pesan);
+                            $nomor = $record->nomor_whatsapp;
+                            if (str_starts_with($nomor, '0')) {
+                                $nomor = '62' . substr($nomor, 1);
+                            }
+                            return "https://wa.me/{$nomor}?text={$encoded}";
+                        })
+                        ->openUrlInNewTab(),
+                    \Filament\Actions\Action::make('wa_selesai')
+                        ->label('WA Selesai')
+                        ->icon('heroicon-m-check-badge')
+                        ->color('success')
+                        ->url(function ($record) {
+                            $total = "Rp " . number_format($record->transaksi->total_akhir ?? $record->total_estimasi_harga, 0, ',', '.');
+                            $pesan = "PING!! 🔔\n\nHalo Kak *{$record->nama_pelanggan}*, cucian baju kakak dengan Struk *{$record->kode_pesanan}* saat ini sudah SELESAI, terlipat rapi, dan pastinya super wangi!\n\nSilakan datang ke outlet untuk pengambilan ya kak.\nTotal Tagihan: *$total*\n\nTerima kasih banyak! 🙏";
+                            $encoded = urlencode($pesan);
+                            $nomor = $record->nomor_whatsapp;
+                            if (str_starts_with($nomor, '0')) {
+                                $nomor = '62' . substr($nomor, 1);
+                            }
+                            return "https://wa.me/{$nomor}?text={$encoded}";
+                        })
+                        ->openUrlInNewTab(),
+                ])->label('Kirim WA')->icon('heroicon-m-device-phone-mobile')->button()->color('success'),
             ])
             ->toolbarActions([
                 BulkActionGroup::make([
@@ -154,12 +187,34 @@ class PemesanansTable
                         }),
 
                     \Filament\Actions\BulkAction::make('ubah_ke_selesai')
-                        ->label('Tandai Selesai')
+                        ->label('Tandai Selesai (dan WA)')
                         ->icon('heroicon-o-check-circle')
                         ->color('success')
                         ->requiresConfirmation()
-                        ->modalHeading('Ubah Status ke Selesai')
-                        ->modalDescription('Apakah Anda yakin ingin mengubah status pesanan yang dipilih menjadi "Selesai"?')
+                        ->modalHeading('Tandai Selesai & Kirim WA')
+                        ->modalDescription('Apakah Anda yakin ingin mengubah status pesanan yang dipilih menjadi "Selesai"? Klik link WA berikut terlebih dahulu untuk mengabari pelanggan:')
+                        ->modalSubmitActionLabel('Konfirmasi Selesai')
+                        ->form(function (\Illuminate\Database\Eloquent\Collection $records) {
+                            $html = '<div style="display: flex; flex-direction: column; gap: 0.5rem; margin-top: 1rem;">';
+                            foreach ($records as $record) {
+                                $total = "Rp " . number_format($record->transaksi->total_akhir ?? $record->total_estimasi_harga, 0, ',', '.');
+                                $pesan = "PING!! 🔔\n\nHalo Kak *{$record->nama_pelanggan}*, cucian baju kakak dengan Struk *{$record->kode_pesanan}* saat ini sudah SELESAI, terlipat rapi, dan pastinya super wangi!\n\nSilakan datang ke outlet untuk pengambilan ya kak.\nTotal Tagihan: *$total*\n\nTerima kasih banyak! 🙏";
+                                $encoded = urlencode($pesan);
+                                $nomor = $record->nomor_whatsapp;
+                                if (str_starts_with($nomor, '0')) {
+                                    $nomor = '62' . substr($nomor, 1);
+                                }
+                                $link = "https://wa.me/{$nomor}?text={$encoded}";
+                                $html .= '<a href="' . $link . '" target="_blank" style="padding: 0.75rem; background-color: #22c55e; color: white; border-radius: 0.5rem; text-align: center; font-weight: bold; text-decoration: none; font-size: 0.875rem;">💬 WA ke ' . e($record->nama_pelanggan) . '</a>';
+                            }
+                            $html .= '</div>';
+
+                            return [
+                                \Filament\Forms\Components\Placeholder::make('wa_links')
+                                    ->hiddenLabel()
+                                    ->content(new \Illuminate\Support\HtmlString($html))
+                            ];
+                        })
                         ->action(function (\Illuminate\Database\Eloquent\Collection $records) {
                             $records->each->update(['status' => 'Selesai']);
                             \Filament\Notifications\Notification::make()

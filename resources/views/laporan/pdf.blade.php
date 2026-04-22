@@ -21,7 +21,7 @@
 </head>
 <body>
     <div class="header">
-        <h2>Laporan Keuangan Laundry</h2>
+        <h2>Laporan Keuangan Laundry AK</h2>
         <p>Periode: {{ \Carbon\Carbon::parse($dari)->format('d M Y') }} s/d {{ \Carbon\Carbon::parse($sampai)->format('d M Y') }}</p>
     </div>
 

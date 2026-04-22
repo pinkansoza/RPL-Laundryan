@@ -14,12 +14,6 @@ class EditTransaksi extends EditRecord
     protected function getHeaderActions(): array
     {
         return [
-            Action::make('print')
-                ->label('Cetak Nota')
-                ->icon('heroicon-m-printer')
-                ->color('info')
-                ->url(fn () => route('cetak.nota', $this->record))
-                ->openUrlInNewTab(),
             DeleteAction::make(),
         ];
     }
