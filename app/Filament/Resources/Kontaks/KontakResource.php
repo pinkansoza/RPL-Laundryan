@@ -21,7 +21,10 @@ class KontakResource extends Resource
 
     protected static string|BackedEnum|null $navigationIcon = "heroicon-o-phone"; 
 
-    protected static ?string $recordTitleAttribute = 'whatsapp';
+    public static function getRecordTitle(?Model $record): \Illuminate\Contracts\Support\Htmlable|string|null
+    {
+        return 'Pengaturan Kontak';
+    }
 
     protected static UnitEnum|string|null $navigationGroup = 'Pengaturan Website';
     

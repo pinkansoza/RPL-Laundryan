@@ -11,6 +11,8 @@ use App\Models\BerandaSetting;
 use Filament\Resources\Resource;
 use Filament\Schemas\Schema;
 use Filament\Tables\Table;
+use Illuminate\Contracts\Support\Htmlable;
+use Illuminate\Database\Eloquent\Model;
 use UnitEnum;
 use BackedEnum;
 
@@ -20,14 +22,20 @@ class BerandaSettingResource extends Resource
 
     protected static string|BackedEnum|null $navigationIcon = 'heroicon-o-home';
 
-    protected static ?string $recordTitleAttribute = 'judul';
     protected static UnitEnum|string|null $navigationGroup = 'Pengaturan Website';
     
     protected static ?string $navigationLabel = 'Beranda';
 
     protected static ?string $pluralLabel = 'Beranda';
+
+    protected static ?string $label = 'Beranda';
     
     protected static ?int $navigationSort = 1;
+
+    public static function getRecordTitle(?Model $record): Htmlable|string|null
+    {
+        return 'Pengaturan Beranda';
+    }
 
     public static function canAccess(): bool
     {
