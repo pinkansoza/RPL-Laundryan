@@ -116,10 +116,6 @@
         <span>Harga Akhir:</span>
         <span class="bold">Rp {{ number_format($transaksi->total_akhir, 0, ',', '.') }}</span>
     </div>
-    <div class="flex info-row">
-        <span>Status ({{ $transaksi->metode_pembayaran }}):</span>
-        <span class="bold">{{ $transaksi->status_pembayaran }}</span>
-    </div>
 
     <div class="center" style="margin-top: 15px; font-size: 9px; color:#333;">
         Terima Kasih<br>
