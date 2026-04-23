@@ -2,6 +2,8 @@
 
 namespace App\Filament\Resources\Pemesanans\Tables;
 
+use App\Models\Kontak;
+
 use App\Models\Pemesanan;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteBulkAction;
@@ -143,7 +145,72 @@ class PemesanansTable
                         ->icon('heroicon-m-chat-bubble-left-ellipsis')
                         ->color('success')
                         ->url(function ($record) {
-                            $pesan = "Halo Kak *{$record->nama_pelanggan}* 👋\n\nTerima kasih sudah mempercayakan cuciannya di *Laundry AK*!\nNomor Struk: *{$record->kode_pesanan}*\nLayanan: {$record->paket} - {$record->jenis_layanan}\n\nCucian kakak sedang kami proses masuk mesin cuci hari ini. Tunggu info selanjutnya kalau sudah wangi ya!\n\n~ Admin Laundry AK ~";
+                            $outletName = 'Laundry AK';
+                            $alamat = 'Gg. Cempakasari No 39 Sekaran, Gunungpati, Semarang';
+                            $kasir = auth()->user()->name ?? 'Admin';
+
+                            $masuk = $record->created_at;
+                            $tglNota = $masuk ? $masuk->translatedFormat('d F Y') : now()->translatedFormat('d F Y');
+
+                            // Estimasi selesai
+                            $estSelesai = $masuk ? $masuk->copy() : now();
+                            $durasiStr = strtolower($record->durasi_layanan ?? '');
+                            $jenisStr = strtolower($record->jenis_layanan ?? '');
+                            if (str_contains($durasiStr, 'oneday') || str_contains($jenisStr, 'oneday')) {
+                                $estSelesai->addDay();
+                            } elseif (str_contains($durasiStr, 'express') || str_contains($jenisStr, 'express')) {
+                                $estSelesai->addHours(12);
+                            } else {
+                                $estSelesai->addDays(3);
+                            }
+                            $estSelesaiStr = $estSelesai->translatedFormat('d F Y H:i:s');
+
+                            // Qty & harga satuan
+                            $total = $record->transaksi->total_akhir ?? $record->total_estimasi_harga;
+                            if ($record->berat) {
+                                $qtyLabel = $record->berat . ' kg';
+                                $hargaSatuan = $record->berat > 0 ? round($total / $record->berat) : $total;
+                                $satuanLabel = '/kg';
+                            } elseif ($record->jumlah_item) {
+                                $qtyLabel = $record->jumlah_item . ' pcs';
+                                $hargaSatuan = $record->jumlah_item > 0 ? round($total / $record->jumlah_item) : $total;
+                                $satuanLabel = '/pcs';
+                            } else {
+                                $qtyLabel = '1 ls';
+                                $hargaSatuan = $total;
+                                $satuanLabel = '/ls';
+                            }
+
+                            $totalFormatted = 'Rp ' . number_format($total, 0, ',', '.');
+                            $hargaSatuanFormatted = 'Rp ' . number_format($hargaSatuan, 0, ',', '.');
+                            $layanan = $record->jenis_layanan;
+                            if ($record->durasi_layanan) {
+                                $layanan .= ' ' . $record->durasi_layanan;
+                            }
+                            $catatan = $record->catatan ?? '-';
+
+                            $pesan = "*DIGITAL RECEIPT*\n"
+                                . "\n"
+                                . "Outlet : {$outletName}\n"
+                                . "Alamat : {$alamat}\n"
+                                . "Kasir : {$kasir}\n"
+                                . "\n"
+                                . "Nama Pelanggan : {$record->nama_pelanggan}\n"
+                                . "No. Handphone : {$record->nomor_whatsapp}\n"
+                                . "\n"
+                                . "Kode Nota : *{$record->kode_pesanan}*\n"
+                                . "Tgl. Nota : {$tglNota}\n"
+                                . "\n"
+                                . "Detail\n"
+                                . "===============================\n"
+                                . "Layanan: {$layanan} {$qtyLabel} x {$hargaSatuanFormatted}{$satuanLabel} = {$totalFormatted}\n"
+                                . "Catatan : {$catatan}\n"
+                                . "Est. Selesai : {$estSelesaiStr}\n"
+                                . "===============================\n"
+                                . "Total : {$totalFormatted}\n"
+                                . "\n"
+                                . "Terima kasih sudah mempercayakan cuciannya di *{$outletName}*!";
+
                             $encoded = urlencode($pesan);
                             $nomor = $record->nomor_whatsapp;
                             if (str_starts_with($nomor, '0')) {
@@ -157,8 +224,40 @@ class PemesanansTable
                         ->icon('heroicon-m-check-badge')
                         ->color('success')
                         ->url(function ($record) {
-                            $total = "Rp " . number_format($record->transaksi->total_akhir ?? $record->total_estimasi_harga, 0, ',', '.');
-                            $pesan = "PING!! 🔔\n\nHalo Kak *{$record->nama_pelanggan}*, cucian baju kakak dengan Struk *{$record->kode_pesanan}* saat ini sudah SELESAI, terlipat rapi, dan pastinya super wangi!\n\nSilakan datang ke outlet untuk pengambilan ya kak.\nTotal Tagihan: *$total*\n\nTerima kasih banyak! 🙏";
+                            $outletName = 'Laundry AK';
+
+                            $total = $record->transaksi->total_akhir ?? $record->total_estimasi_harga;
+                            $totalFormatted = 'Rp ' . number_format($total, 0, ',', '.');
+
+                            $layanan = $record->jenis_layanan;
+                            if ($record->durasi_layanan) {
+                                $layanan = $record->durasi_layanan;
+                            }
+                            $paketLabel = $record->paket ? ' [' . $record->paket . ']' : '';
+                            $catatan = $record->catatan ?? '-';
+
+                            $pesan = "Halo kak {$record->nama_pelanggan}\n"
+                                . "\n"
+                                . "Pesanan kakak di {$outletName} sudah SELESAI\n"
+                                . "Cuciannya sudah rapi, wangi, dan siap diambil!\n"
+                                . "\n"
+                                . "===============================\n"
+                                . "\n"
+                                . "Outlet : {$outletName}\n"
+                                . "Nama Pelanggan : {$record->nama_pelanggan}\n"
+                                . "No. Handphone : {$record->nomor_whatsapp}\n"
+                                . "\n"
+                                . "Kode Nota : {$record->kode_pesanan}\n"
+                                . "\n"
+                                . "Detail\n"
+                                . "===============================\n"
+                                . "{$layanan}{$paketLabel}\n"
+                                . "Catatan : {$catatan}\n"
+                                . "Total Tagihan: {$totalFormatted}\n"
+                                . "===============================\n"
+                                . "\n"
+                                . "Terima Kasih";
+
                             $encoded = urlencode($pesan);
                             $nomor = $record->nomor_whatsapp;
                             if (str_starts_with($nomor, '0')) {
@@ -195,10 +294,42 @@ class PemesanansTable
                         ->modalDescription('Apakah Anda yakin ingin mengubah status pesanan yang dipilih menjadi "Selesai"? Klik link WA berikut terlebih dahulu untuk mengabari pelanggan:')
                         ->modalSubmitActionLabel('Konfirmasi Selesai')
                         ->form(function (\Illuminate\Database\Eloquent\Collection $records) {
+                            $outletName = 'Laundry AK';
+
                             $html = '<div style="display: flex; flex-direction: column; gap: 0.5rem; margin-top: 1rem;">';
                             foreach ($records as $record) {
-                                $total = "Rp " . number_format($record->transaksi->total_akhir ?? $record->total_estimasi_harga, 0, ',', '.');
-                                $pesan = "PING!! 🔔\n\nHalo Kak *{$record->nama_pelanggan}*, cucian baju kakak dengan Struk *{$record->kode_pesanan}* saat ini sudah SELESAI, terlipat rapi, dan pastinya super wangi!\n\nSilakan datang ke outlet untuk pengambilan ya kak.\nTotal Tagihan: *$total*\n\nTerima kasih banyak! 🙏";
+                                $total = $record->transaksi->total_akhir ?? $record->total_estimasi_harga;
+                                $totalFormatted = 'Rp ' . number_format($total, 0, ',', '.');
+
+                                $layanan = $record->jenis_layanan;
+                                if ($record->durasi_layanan) {
+                                    $layanan = $record->durasi_layanan;
+                                }
+                                $paketLabel = $record->paket ? ' [' . $record->paket . ']' : '';
+                                $catatan = $record->catatan ?? '-';
+
+                                $pesan = "Halo kak {$record->nama_pelanggan}\n"
+                                    . "\n"
+                                    . "Pesanan kakak di {$outletName} sudah SELESAI\n"
+                                    . "Cuciannya sudah rapi, wangi, dan siap diambil!\n"
+                                    . "\n"
+                                    . "-----------------------------------------------\n"
+                                    . "\n"
+                                    . "Outlet : {$outletName}\n"
+                                    . "Nama Pelanggan : {$record->nama_pelanggan}\n"
+                                    . "No. Handphone : {$record->nomor_whatsapp}\n"
+                                    . "\n"
+                                    . "Kode Nota : {$record->kode_pesanan}\n"
+                                    . "\n"
+                                    . "Detail\n"
+                                    . "--------------------------------\n"
+                                    . "{$layanan}{$paketLabel}\n"
+                                    . "Catatan : {$catatan}\n"
+                                    . "Total Tagihan: {$totalFormatted}\n"
+                                    . "--------------------------------\n"
+                                    . "\n"
+                                    . "Terima Kasih";
+
                                 $encoded = urlencode($pesan);
                                 $nomor = $record->nomor_whatsapp;
                                 if (str_starts_with($nomor, '0')) {

@@ -4,6 +4,7 @@ namespace App\Filament\Resources\Pemesanans\Schemas;
 
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Textarea;
+use Filament\Forms\Components\FileUpload;
 use Filament\Schemas\Schema;
 
 class PemesananForm
@@ -193,10 +194,9 @@ class PemesananForm
                         'QRIS' => 'QRIS',
                     ]),
 
-                \Filament\Forms\Components\FileUpload::make('foto')
+                FileUpload::make('foto')
                     ->label('Foto Kondisi Awal')
                     ->image()
-                    ->optimize('webp')
                     ->imageResizeMode('cover')
                     ->imageResizeTargetWidth('1024')
                     ->imageResizeTargetHeight('1024')
