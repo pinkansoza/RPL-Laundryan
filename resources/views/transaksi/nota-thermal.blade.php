@@ -6,46 +6,119 @@
     <style>
         @page {
             margin: 0;
-            size: 58mm auto;
+            padding: 0;
+            size: 58mm 297mm;
         }
 
-        * { margin: 0; padding: 0; box-sizing: border-box; }
+        * { 
+            margin: 0; 
+            padding: 0; 
+            box-sizing: border-box;
+            font-weight: 300 !important; /* Extra light */
+        }
 
         body {
-            font-family: 'Courier New', monospace;
-            width: 58mm;
-            margin: 0 auto;
-            padding: 2mm 3mm;
+            font-family: Arial, Helvetica, sans-serif; /* Ganti ke Arial - lebih tipis */
+            width: 100%;
+            max-width: 58mm;
+            margin: 0;
+            padding: 0;
             font-size: 11px;
-            line-height: 1.4;
+            line-height: 1.5;
             color: #000;
             background: #fff;
+            font-weight: 300 !important;
+            word-wrap: break-word;
+            overflow-wrap: break-word;
         }
 
         .center { text-align: center; }
-        .right { text-align: right; }
-        .bold { font-weight: bold; }
-        .mt-5 { margin-top: 5px; }
-
-        .logo { font-size: 14px; font-weight: bold; margin-bottom: 2px; }
-        .sub { font-size: 10px; color: #000; }
-
-        .line { border-top: 1px dashed #000; margin: 4px 0; }
-        .line-bold { border-top: 1px solid #000; margin: 4px 0; }
-
-        .flex { display: flex; justify-content: space-between; }
         
-        .info-row { font-size: 10px; margin-bottom: 1px; }
+        .logo { 
+            font-size: 14px;
+            font-weight: 300 !important;
+            margin-bottom: 3px; 
+        }
+        
+        .sub { 
+            font-size: 10px; 
+            line-height: 1.4;
+            margin-bottom: 1px;
+            font-weight: 300 !important;
+        }
+
+        .line {
+            border-top: 1px dashed #000;
+            margin: 4px 0;
+        }
+
+        .info {
+            font-size: 11px;
+            margin-bottom: 2px;
+            line-height: 1.5;
+            font-weight: 300 !important;
+        }
+
+        .info-sm {
+            font-size: 10px;
+            margin-bottom: 2px;
+            line-height: 1.5;
+            font-weight: 300 !important;
+        }
+
+        .total-line {
+            font-size: 12px;
+            font-weight: 300 !important;
+            margin: 3px 0;
+        }
+
+        .footer {
+            text-align: center;
+            margin-top: 5px;
+            font-size: 9px;
+            padding-bottom: 3mm;
+            line-height: 1.4;
+            font-weight: 300 !important;
+        }
 
         @media screen {
-            body { margin: 20px auto; border: 1px solid #ccc; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
-            .no-print { width: 58mm; margin: 10px auto; text-align: center; padding-bottom: 10px; }
-            .btn { border: none; padding: 8px 15px; font-size: 12px; font-weight: bold; border-radius: 5px; cursor: pointer; margin: 2px; color: #fff; }
+            body {
+                margin: 20px auto;
+                border: 1px solid #ccc;
+                box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+                padding: 2mm 3mm;
+            }
+            .no-print {
+                width: 58mm;
+                margin: 10px auto;
+                text-align: center;
+                padding-bottom: 10px;
+            }
+            .btn {
+                border: none;
+                padding: 8px 15px;
+                font-size: 12px;
+                font-weight: bold;
+                border-radius: 5px;
+                cursor: pointer;
+                margin: 2px;
+                color: #fff;
+            }
             .btn-print { background: #559dd4; }
             .btn-close { background: #666; }
         }
 
-        @media print { .no-print { display: none !important; } body { border: none; box-shadow: none; } }
+        @media print {
+            .no-print { display: none !important; }
+            body {
+                width: 100%;
+                max-width: none;
+                border: none;
+                box-shadow: none;
+                margin: 0;
+                padding: 2mm 3mm;
+            }
+        }
     </style>
 </head>
 <body>
@@ -53,11 +126,10 @@
         $pemesanan = $transaksi->pemesanan;
         $masuk = $pemesanan ? $pemesanan->created_at : $transaksi->created_at;
         $estSelesai = $masuk ? $masuk->copy() : now();
-        
-        // Cek durasi untuk Estimasi Selesai
+
         $durasiStr = strtolower($pemesanan->durasi_layanan ?? '');
         $jenisStr = strtolower($pemesanan->jenis_layanan ?? '');
-        
+
         if (str_contains($durasiStr, 'oneday') || str_contains($jenisStr, 'oneday')) {
             $estSelesai->addDay();
         } elseif (str_contains($durasiStr, 'express') || str_contains($jenisStr, 'express')) {
@@ -66,16 +138,13 @@
             $estSelesai->addDays(3);
         }
 
-        // Qty Label & Calculation
-        $qtyLabel = ($pemesanan && $pemesanan->berat) ? $pemesanan->berat . ' kg' : (($pemesanan && $pemesanan->jumlah_item) ? $pemesanan->jumlah_item . ' pcs' : '1 ls');
+        $qtyLabel = ($pemesanan && $pemesanan->berat) ? $pemesanan->berat . 'kg' : (($pemesanan && $pemesanan->jumlah_item) ? $pemesanan->jumlah_item . 'pcs' : '1ls');
         $qtyNilai = ($pemesanan && $pemesanan->berat) ? $pemesanan->berat : (($pemesanan && $pemesanan->jumlah_item) ? $pemesanan->jumlah_item : 1);
         $hargaSatuan = $qtyNilai > 0 ? ($transaksi->total_biaya / $qtyNilai) : $transaksi->total_biaya;
-        
-        // Helper text layanan
-        $txtLayanan = $pemesanan ? $pemesanan->jenis_layanan : 'Layanan Manual';
-        if ($pemesanan && $pemesanan->durasi_layanan) {
-            $txtLayanan .= ' (' . $pemesanan->durasi_layanan . ')';
-        }
+
+        $txtLayanan = $pemesanan ? $pemesanan->jenis_layanan : 'Manual';
+        $txtDurasi = ($pemesanan && $pemesanan->durasi_layanan) ? $pemesanan->durasi_layanan : '';
+        $layananFull = $txtLayanan . ($txtDurasi ? " ($txtDurasi)" : '');
     @endphp
 
     <div class="no-print">
@@ -84,42 +153,44 @@
     </div>
 
     {{-- HEADER --}}
-    <div class="center" style="margin-bottom: 8px;">
+    <div class="center" style="margin-bottom:3px;">
         <div class="logo">LAUNDRY AK</div>
-        <div class="sub">Gg. Cempakasari No 39 Sekaran<br>Gunungpati, Semarang</div>
+        <div class="sub">Gg. Cempakasari No 39</div>
+        <div class="sub">Sekaran, Gunungpati</div>
+        <div class="sub">Semarang</div>
         <div class="sub">{{ $kontak->whatsapp ?? '0895393339469' }}</div>
     </div>
 
-    {{-- INFO PELANGGAN --}}
-    <div class="info-row bold" style="margin-top: 10px;">{{ $transaksi->kode_transaksi }}</div>
-    <div class="info-row">Kasir : Admin</div>
-    <div class="info-row">Pelanggan : {{ $pemesanan->nama_pelanggan ?? 'Umum' }}</div>
-    <div class="info-row">No HP : {{ $pemesanan->nomor_whatsapp ?? '-' }}</div>
-    <div class="info-row">Layanan : {{ $txtLayanan }}</div>
-    <div class="info-row">Masuk : {{ $masuk ? $masuk->format('d/m/Y - H:i') : '-' }}</div>
-    <div class="info-row">Est Selesai: {{ $estSelesai ? $estSelesai->format('d/m/Y - H:i') : '-' }}</div>
+    <div class="line"></div>
+
+    {{-- INFO --}}
+    <div class="info">{{ $transaksi->kode_transaksi }}</div>
+    <div class="info">Kasir: Admin</div>
+    <div class="info">Nama : {{ $pemesanan->nama_pelanggan ?? 'Umum' }}</div>
+    <div class="info">HP   : {{ $pemesanan->nomor_whatsapp ?? '-' }}</div>
+    <div class="info-sm">Masuk: {{ $masuk ? $masuk->format('d/m/y H:i') : '-' }}</div>
+    <div class="info-sm">Est Selesai: {{ $estSelesai ? $estSelesai->format('d/m/y H:i') : '-' }}</div>
 
     <div class="line"></div>
 
-    {{-- LAYANAN --}}
-    <div class="info-row bold">LAYANAN</div>
-    <div class="info-row">{{ $txtLayanan }}</div>
-    <div class="info-row">
-        {{ $qtyLabel }} x Rp {{ number_format($hargaSatuan, 0, ',', '.') }} = Rp {{ number_format($transaksi->total_biaya, 0, ',', '.') }}
-    </div>
-    <div class="info-row">Catatan : {{ empty($pemesanan) || empty($pemesanan->catatan) ? '-' : $pemesanan->catatan }}</div>
+    {{-- DETAIL --}}
+    <div class="info">DETAIL</div>
+    <div class="info-sm">{{ $layananFull }}</div>
+    <div class="info-sm">{{ $qtyLabel }} x Rp{{ number_format($hargaSatuan, 0, ',', '.') }}</div>
+    <div class="info-sm">= Rp{{ number_format($transaksi->total_biaya, 0, ',', '.') }}</div>
+    @if($pemesanan && $pemesanan->catatan)
+        <div class="info-sm">Catatan: {{ $pemesanan->catatan }}</div>
+    @endif
+
     <div class="line"></div>
 
-    {{-- PEMBAYARAN --}}
-    <div class="info-row bold">PEMBAYARAN</div>
-    <div class="flex info-row">
-        <span>Harga Akhir:</span>
-        <span class="bold">Rp {{ number_format($transaksi->total_akhir, 0, ',', '.') }}</span>
-    </div>
+    {{-- TOTAL --}}
+    <div class="total-line">TOTAL: Rp{{ number_format($transaksi->total_akhir, 0, ',', '.') }}</div>
 
-    <div class="center" style="margin-top: 15px; font-size: 9px; color:#333;">
-        Terima Kasih<br>
-        Sudah mempercayakan laundry kepada kami.
+    {{-- FOOTER --}}
+    <div class="footer">
+        Terima Kasih Sudah mempercayakan<br>
+        laundry kepada kami.
     </div>
 
     <script>
