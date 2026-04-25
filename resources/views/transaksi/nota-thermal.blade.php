@@ -14,71 +14,83 @@
             margin: 0; 
             padding: 0; 
             box-sizing: border-box;
-            font-weight: 300 !important; /* Extra light */
+            font-weight: 300 !important; /* Light - lebih tipis dari normal */
         }
 
         body {
-            font-family: Arial, Helvetica, sans-serif; /* Ganti ke Arial - lebih tipis */
+            /* Font Arial */
+            font-family: Arial, Helvetica, sans-serif; 
             width: 100%;
             max-width: 58mm;
             margin: 0;
             padding: 0;
-            font-size: 11px;
-            line-height: 1.5;
+            font-size: 12px;
+            line-height: 1.3;
             color: #000;
             background: #fff;
-            font-weight: 300 !important;
+            font-weight: 300; /* Light */
+            
+            /* Anti-tebal */
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+            
             word-wrap: break-word;
             overflow-wrap: break-word;
         }
 
+        /* INI YANG BIKIN TENGAH */
         .center { text-align: center; }
         
+        /* Style untuk logo gambar */
+        .logo-img {
+            max-width: 60px;
+            height: auto;
+            margin: 0 auto 5px auto;
+            display: block;
+        }
+        
         .logo { 
-            font-size: 14px;
-            font-weight: 300 !important;
+            font-size: 16px;
+            font-weight: 300;
             margin-bottom: 3px; 
         }
         
         .sub { 
-            font-size: 10px; 
-            line-height: 1.4;
+            font-size: 11px; 
+            line-height: 1.3;
             margin-bottom: 1px;
-            font-weight: 300 !important;
         }
 
+        /* INI YANG BIKIN GARIS PUTUS-PUTUS */
         .line {
             border-top: 1px dashed #000;
-            margin: 4px 0;
+            margin: 6px 0;
         }
 
         .info {
-            font-size: 11px;
+            font-size: 12px;
             margin-bottom: 2px;
-            line-height: 1.5;
-            font-weight: 300 !important;
+            line-height: 1.3;
         }
 
         .info-sm {
-            font-size: 10px;
+            font-size: 11px;
             margin-bottom: 2px;
-            line-height: 1.5;
-            font-weight: 300 !important;
+            line-height: 1.3;
         }
 
         .total-line {
-            font-size: 12px;
-            font-weight: 300 !important;
-            margin: 3px 0;
+            font-size: 13px;
+            font-weight: 300;
+            margin: 4px 0;
         }
 
         .footer {
             text-align: center;
             margin-top: 5px;
-            font-size: 9px;
+            font-size: 11px;
             padding-bottom: 3mm;
-            line-height: 1.4;
-            font-weight: 300 !important;
+            line-height: 1.3;
         }
 
         @media screen {
@@ -154,7 +166,8 @@
 
     {{-- HEADER --}}
     <div class="center" style="margin-bottom:3px;">
-        <div class="logo">LAUNDRY AK</div>
+        <img src="{{ asset('img/logo.png') }}" alt="LAUNDRY AK" class="logo-img">
+        
         <div class="sub">Gg. Cempakasari No 39</div>
         <div class="sub">Sekaran, Gunungpati</div>
         <div class="sub">Semarang</div>
@@ -166,7 +179,7 @@
     {{-- INFO --}}
     <div class="info">{{ $transaksi->kode_transaksi }}</div>
     <div class="info">Kasir: Admin</div>
-    <div class="info">Nama : {{ $pemesanan->nama_pelanggan ?? 'Umum' }}</div>
+    <div class="info">Pelanggan : {{ $pemesanan->nama_pelanggan ?? 'Umum' }}</div>
     <div class="info">HP   : {{ $pemesanan->nomor_whatsapp ?? '-' }}</div>
     <div class="info-sm">Masuk: {{ $masuk ? $masuk->format('d/m/y H:i') : '-' }}</div>
     <div class="info-sm">Est Selesai: {{ $estSelesai ? $estSelesai->format('d/m/y H:i') : '-' }}</div>
