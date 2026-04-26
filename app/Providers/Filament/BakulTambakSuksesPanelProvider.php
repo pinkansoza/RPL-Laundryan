@@ -16,6 +16,8 @@ use Illuminate\Foundation\Http\Middleware\VerifyCsrfToken;
 use Illuminate\Routing\Middleware\SubstituteBindings;
 use Illuminate\Session\Middleware\StartSession;
 use Illuminate\View\Middleware\ShareErrorsFromSession;
+use Filament\View\PanelsRenderHook;
+use Illuminate\Support\Facades\Blade;
 
 class BakulTambakSuksesPanelProvider extends PanelProvider
 {
@@ -52,6 +54,96 @@ class BakulTambakSuksesPanelProvider extends PanelProvider
             ])
             ->authMiddleware([
                 Authenticate::class,
-            ]);
+            ])
+            ->renderHook(
+                PanelsRenderHook::HEAD_END,
+                fn (): string => Blade::render('
+                    <link rel="manifest" href="/manifest.json">
+                    <meta name="theme-color" content="#0ea5e9">
+                    <link rel="apple-touch-icon" href="/images/pwa-icon.svg">
+                ')
+            )
+            ->renderHook(
+                PanelsRenderHook::BODY_START,
+                fn (): string => Blade::render('
+                    <style>
+                        #app-loading-screen {
+                            position: fixed;
+                            top: 0;
+                            left: 0;
+                            width: 100vw;
+                            height: 100vh;
+                            background-color: #ffffff;
+                            z-index: 999999;
+                            display: flex;
+                            flex-direction: column;
+                            justify-content: center;
+                            align-items: center;
+                            transition: opacity 0.5s ease-out, visibility 0.5s ease-out;
+                        }
+                        .dark #app-loading-screen {
+                            background-color: #18181b;
+                        }
+                        .loader-spinner {
+                            width: 50px;
+                            height: 50px;
+                            border: 4px solid #e5e7eb;
+                            border-top: 4px solid #0ea5e9;
+                            border-radius: 50%;
+                            animation: spin 1s linear infinite;
+                            margin-bottom: 20px;
+                        }
+                        .dark .loader-spinner {
+                            border: 4px solid #3f3f46;
+                            border-top: 4px solid #0ea5e9;
+                        }
+                        @keyframes spin {
+                            0% { transform: rotate(0deg); }
+                            100% { transform: rotate(360deg); }
+                        }
+                        .loader-text {
+                            font-family: \'Poppins\', sans-serif;
+                            color: #4b5563;
+                            font-size: 16px;
+                            font-weight: 500;
+                            animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+                        }
+                        .dark .loader-text {
+                            color: #a1a1aa;
+                        }
+                        @keyframes pulse {
+                            0%, 100% { opacity: 1; }
+                            50% { opacity: .5; }
+                        }
+                    </style>
+                    <div id="app-loading-screen">
+                        <div class="loader-spinner"></div>
+                        <div class="loader-text">Memuat Dashboard...</div>
+                    </div>
+                ')
+            )
+            ->renderHook(
+                PanelsRenderHook::BODY_END,
+                fn (): string => Blade::render('
+                    <script>
+                        window.addEventListener("load", function() {
+                            const loader = document.getElementById("app-loading-screen");
+                            if(loader) {
+                                loader.style.opacity = "0";
+                                loader.style.visibility = "hidden";
+                                setTimeout(() => loader.remove(), 500);
+                            }
+
+                            if ("serviceWorker" in navigator) {
+                                navigator.serviceWorker.register("/sw.js").then(function(registration) {
+                                    console.log("ServiceWorker registration successful");
+                                }, function(err) {
+                                    console.log("ServiceWorker registration failed: ", err);
+                                });
+                            }
+                        });
+                    </script>
+                ')
+            );
     }
 }

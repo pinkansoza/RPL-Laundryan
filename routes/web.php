@@ -5,6 +5,10 @@ use App\Http\Controllers\LandingPageController;
 
 Route::get('/', [LandingPageController::class, 'index'])->name('home');
 
+Route::get('/offline', function () {
+    return view('offline');
+});
+
 Route::get('/cetak-nota/{transaksi}', function (\App\Models\Transaksi $transaksi) {
     $kontak = \App\Models\Kontak::first();
     return view('transaksi.nota-thermal', compact('transaksi', 'kontak'));

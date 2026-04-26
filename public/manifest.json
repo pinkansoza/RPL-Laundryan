@@ -1,0 +1,17 @@
+{
+  "name": "Admin Laundry AK",
+  "short_name": "Laundry Ak",
+  "start_url": "/bakulTambakSukses",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#0ea5e9",
+  "description": "Dashboard Manajemen Laundry",
+  "icons": [
+    {
+      "src": "/images/pwa-icon.svg",
+      "sizes": "192x192 512x512",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}
