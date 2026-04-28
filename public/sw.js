@@ -1,8 +1,10 @@
-const CACHE_NAME = 'laundry-admin-cache-v1';
-const OFFLINE_URL = '/offline';
+const CACHE_NAME = 'laundry-admin-cache-v2';
+const OFFLINE_ADMIN_URL = '/offline';
+const OFFLINE_PROFILE_URL = '/offline-profile';
 
 const urlsToCache = [
-    OFFLINE_URL,
+    OFFLINE_ADMIN_URL,
+    OFFLINE_PROFILE_URL,
     '/images/pwa-icon.svg'
 ];
 
@@ -40,7 +42,11 @@ self.addEventListener('fetch', (event) => {
         event.respondWith(
             fetch(event.request)
                 .catch(() => {
-                    return caches.match(OFFLINE_URL);
+                    const url = new URL(event.request.url);
+                    if (url.pathname.startsWith('/bakulTambakSukses')) {
+                        return caches.match(OFFLINE_ADMIN_URL);
+                    }
+                    return caches.match(OFFLINE_PROFILE_URL);
                 })
         );
     } else {

@@ -9,6 +9,10 @@ Route::get('/offline', function () {
     return view('offline');
 });
 
+Route::get('/offline-profile', function () {
+    return view('offline-profile');
+});
+
 Route::get('/cetak-nota/{transaksi}', function (\App\Models\Transaksi $transaksi) {
     $kontak = \App\Models\Kontak::first();
     return view('transaksi.nota-thermal', compact('transaksi', 'kontak'));
